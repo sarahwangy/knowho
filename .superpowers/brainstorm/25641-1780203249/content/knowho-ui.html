@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Knowho — UI 原型</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #f0ece8;
+    font-family: -apple-system, 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+    padding: 32px 20px 60px;
+    min-height: 100vh;
+  }
+  h1.page-title {
+    text-align: center;
+    font-size: 22px;
+    font-weight: 700;
+    color: #2d2926;
+    margin-bottom: 6px;
+    letter-spacing: -0.3px;
+  }
+  p.page-sub {
+    text-align: center;
+    font-size: 13px;
+    color: #8b7d72;
+    margin-bottom: 36px;
+  }
+
+  /* Phone grid */
+  .phone-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+    justify-content: center;
+    align-items: flex-start;
+  }
+  .phone-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .phone-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: #8b7d72;
+  }
+
+  /* Phone shell */
+  .phone {
+    width: 375px;
+    min-height: 760px;
+    background: #fff;
+    border-radius: 44px;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.16), 0 4px 12px rgba(0,0,0,0.08);
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(0,0,0,0.06);
+  }
+
+  /* Status bar */
+  .status-bar {
+    height: 50px;
+    background: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 24px 0;
+    font-size: 12px;
+    font-weight: 600;
+    color: #2d2926;
+  }
+  .status-bar .time { font-size: 15px; font-weight: 700; }
+  .status-bar .icons { display: flex; gap: 6px; align-items: center; }
+
+  /* ============ PAGE 1: LOGIN ============ */
+  .login-page {
+    background: linear-gradient(160deg, #fdf6ee 0%, #fff 60%);
+    min-height: 760px;
+    display: flex;
+    flex-direction: column;
+  }
+  .login-hero {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 36px 0;
+  }
+  .login-logo {
+    width: 72px; height: 72px;
+    background: linear-gradient(135deg, #e8845a, #d4634a);
+    border-radius: 20px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 24px rgba(212,99,74,0.3);
+  }
+  .login-brand {
+    font-size: 32px; font-weight: 800; color: #2d2926;
+    letter-spacing: -1px; margin-bottom: 8px;
+  }
+  .login-tagline {
+    font-size: 15px; color: #8b7d72; text-align: center;
+    line-height: 1.6; max-width: 240px; margin-bottom: 48px;
+  }
+  .feature-list {
+    width: 100%; display: flex; flex-direction: column; gap: 14px; margin-bottom: 48px;
+  }
+  .feature-item {
+    display: flex; align-items: center; gap: 12px;
+  }
+  .feature-icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center; font-size: 18px;
+    flex-shrink: 0;
+  }
+  .feature-icon.orange { background: #fff0e8; }
+  .feature-icon.green { background: #eaf5ee; }
+  .feature-icon.blue { background: #e8f0ff; }
+  .feature-text { font-size: 14px; color: #4a3d35; line-height: 1.4; }
+  .feature-text strong { color: #2d2926; font-weight: 600; }
+
+  .login-footer {
+    padding: 24px 36px 44px;
+  }
+  .btn-google {
+    width: 100%; height: 52px;
+    background: #fff; border: 1.5px solid #e0d8d2;
+    border-radius: 14px; display: flex; align-items: center; justify-content: center;
+    gap: 10px; font-size: 15px; font-weight: 600; color: #2d2926;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    cursor: pointer; margin-bottom: 12px;
+  }
+  .btn-google .google-icon {
+    width: 22px; height: 22px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%234285F4' d='M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z'/%3E%3Cpath fill='%2334A853' d='M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z'/%3E%3Cpath fill='%23FBBC05' d='M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z'/%3E%3Cpath fill='%23EA4335' d='M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z'/%3E%3C/svg%3E") center/contain no-repeat;
+    display: inline-block;
+  }
+  .login-hint { font-size: 12px; color: #a89990; text-align: center; line-height: 1.5; }
+
+  /* ============ PAGE 2: CONTACT LIST ============ */
+  .list-page { background: #f7f4f1; min-height: 760px; }
+  .list-header {
+    background: #fff; padding: 16px 20px 12px;
+    border-bottom: 1px solid #f0ece8;
+  }
+  .list-header-top {
+    display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;
+  }
+  .list-header h2 { font-size: 22px; font-weight: 800; color: #2d2926; letter-spacing: -0.5px; }
+  .btn-icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: #f7f4f1; display: flex; align-items: center; justify-content: center;
+    font-size: 18px; cursor: pointer;
+  }
+  .search-bar {
+    display: flex; align-items: center; gap: 8px;
+    background: #f7f4f1; border-radius: 12px; padding: 10px 14px;
+    font-size: 15px; color: #a89990;
+  }
+  .search-bar span { font-size: 16px; }
+
+  /* tag chips */
+  .tag-strip {
+    display: flex; gap: 8px; padding: 12px 20px; overflow-x: auto;
+    background: #fff; border-bottom: 1px solid #f0ece8;
+    scrollbar-width: none;
+  }
+  .tag-chip {
+    flex-shrink: 0; height: 30px; padding: 0 12px; border-radius: 20px;
+    font-size: 13px; font-weight: 500; white-space: nowrap;
+    display: flex; align-items: center;
+    background: #f0ece8; color: #6b5d54; border: 1px solid transparent;
+  }
+  .tag-chip.active {
+    background: #e8845a; color: #fff; border-color: #e8845a;
+  }
+
+  /* contact list */
+  .contact-list { padding: 16px 20px; display: flex; flex-direction: column; gap: 10px; }
+  .contact-card {
+    background: #fff; border-radius: 16px; padding: 14px 16px;
+    display: flex; align-items: center; gap: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  }
+  .avatar {
+    width: 46px; height: 46px; border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; font-weight: 700; flex-shrink: 0; color: #fff;
+  }
+  .av-orange { background: linear-gradient(135deg, #e8845a, #d4634a); }
+  .av-green { background: linear-gradient(135deg, #5abc7e, #3da063); }
+  .av-purple { background: linear-gradient(135deg, #9b7fe8, #7c5fd4); }
+  .av-blue { background: linear-gradient(135deg, #5aabe8, #3d88d4); }
+  .av-pink { background: linear-gradient(135deg, #e85aa0, #d43d7f); }
+
+  .contact-info { flex: 1; min-width: 0; }
+  .contact-name { font-size: 16px; font-weight: 700; color: #2d2926; margin-bottom: 4px; }
+  .contact-meta { font-size: 12px; color: #a89990; display: flex; gap: 8px; align-items: center; }
+  .contact-meta .dot { width: 3px; height: 3px; background: #d4c8c0; border-radius: 50%; }
+  .contact-tag-badge {
+    display: inline-block; font-size: 11px; font-weight: 500;
+    background: #f0ece8; color: #6b5d54; border-radius: 6px; padding: 2px 7px;
+    margin-bottom: 4px;
+  }
+  .contact-arrow { font-size: 18px; color: #d4c8c0; }
+
+  /* FAB */
+  .fab {
+    position: absolute; bottom: 32px; right: 24px;
+    width: 56px; height: 56px; border-radius: 18px;
+    background: linear-gradient(135deg, #e8845a, #d4634a);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; color: #fff; font-weight: 300;
+    box-shadow: 0 6px 20px rgba(212,99,74,0.4);
+    cursor: pointer;
+  }
+  .fab-label {
+    position: absolute; bottom: 38px; right: 88px;
+    background: #2d2926; color: #fff; font-size: 12px; font-weight: 600;
+    padding: 5px 10px; border-radius: 8px; white-space: nowrap;
+  }
+  .fab-label::after {
+    content: ''; position: absolute; right: -6px; top: 50%; transform: translateY(-50%);
+    border: 6px solid transparent; border-right: none; border-left-color: #2d2926;
+  }
+
+  /* bottom nav */
+  .bottom-nav {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 80px; background: #fff; border-top: 1px solid #f0ece8;
+    display: flex; align-items: flex-start; padding-top: 12px;
+  }
+  .nav-item {
+    flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;
+    font-size: 10px; color: #a89990; font-weight: 500;
+  }
+  .nav-item.active { color: #e8845a; }
+  .nav-icon { font-size: 22px; }
+
+  /* ============ PAGE 3: ADD CONTACT ============ */
+  .add-page { background: #f7f4f1; min-height: 760px; position: relative; }
+  .add-header {
+    background: #fff; padding: 16px 20px 14px;
+    display: flex; align-items: center; gap: 12px;
+    border-bottom: 1px solid #f0ece8;
+  }
+  .back-btn {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: #f7f4f1; display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .add-header h2 { font-size: 18px; font-weight: 700; color: #2d2926; }
+
+  .form-body { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+  .form-section { background: #fff; border-radius: 16px; overflow: hidden; }
+  .form-row {
+    padding: 14px 16px; border-bottom: 1px solid #f7f4f1;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .form-row:last-child { border-bottom: none; }
+  .form-label { font-size: 11px; font-weight: 600; letter-spacing: 0.5px; color: #a89990; text-transform: uppercase; }
+  .form-input {
+    font-size: 16px; color: #2d2926; font-weight: 500;
+    border: none; outline: none; background: transparent; width: 100%;
+    font-family: inherit;
+  }
+  .form-input.placeholder { color: #c8bdb5; font-weight: 400; }
+  .form-input.focused { color: #e8845a; }
+
+  /* tag picker */
+  .tag-picker { padding: 14px 16px; }
+  .tag-picker-label { font-size: 11px; font-weight: 600; letter-spacing: 0.5px; color: #a89990; text-transform: uppercase; margin-bottom: 10px; }
+  .tag-options { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tag-option {
+    height: 30px; padding: 0 12px; border-radius: 20px;
+    font-size: 13px; font-weight: 500;
+    background: #f0ece8; color: #6b5d54; border: 1.5px solid transparent;
+    cursor: pointer;
+  }
+  .tag-option.selected {
+    background: #fff0e8; color: #e8845a; border-color: #e8845a;
+  }
+  .tag-option.add { background: #f0ece8; color: #a89990; border-style: dashed; border-color: #d4c8c0; }
+
+  .submit-area { padding: 0 20px 40px; }
+  .btn-submit {
+    width: 100%; height: 54px; border-radius: 16px;
+    background: linear-gradient(135deg, #e8845a, #d4634a);
+    color: #fff; font-size: 16px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 6px 20px rgba(212,99,74,0.35);
+    cursor: pointer;
+  }
+  .voice-hint {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    margin-top: 12px; font-size: 13px; color: #a89990;
+  }
+
+  /* ============ PAGE 4: PROFILE ============ */
+  .profile-page { background: #f7f4f1; min-height: 760px; position: relative; overflow: hidden; }
+  .profile-header {
+    background: #fff; padding: 16px 20px 0;
+    border-bottom: 1px solid #f0ece8;
+  }
+  .profile-header-top {
+    display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;
+  }
+  .profile-hero {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 24px 20px 20px; background: #fff;
+  }
+  .profile-avatar {
+    width: 76px; height: 76px; border-radius: 24px;
+    background: linear-gradient(135deg, #e8845a, #d4634a);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px; font-weight: 700; color: #fff;
+    margin-bottom: 12px; box-shadow: 0 8px 24px rgba(212,99,74,0.25);
+  }
+  .profile-name { font-size: 24px; font-weight: 800; color: #2d2926; letter-spacing: -0.5px; margin-bottom: 6px; }
+  .profile-tags { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-bottom: 8px; }
+  .profile-tag {
+    font-size: 12px; font-weight: 500; color: #6b5d54;
+    background: #f0ece8; border-radius: 8px; padding: 3px 10px;
+  }
+  .profile-met { font-size: 13px; color: #a89990; }
+
+  /* hint card */
+  .hint-card {
+    margin: 16px 20px 0; border-radius: 16px; overflow: hidden;
+    background: linear-gradient(135deg, #fff8f4, #fff0e8);
+    border: 1px solid #f0ddd0; padding: 14px 16px;
+  }
+  .hint-card-title { font-size: 12px; font-weight: 700; color: #c47a55; letter-spacing: 0.3px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+  .hint-card-text { font-size: 14px; color: #4a3d35; line-height: 1.6; margin-bottom: 8px; }
+  .hint-birthday { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #c47a55; font-weight: 500; }
+
+  /* profile sections */
+  .profile-section { margin: 12px 20px 0; background: #fff; border-radius: 16px; overflow: hidden; }
+  .section-header {
+    padding: 12px 16px 10px; display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid #f7f4f1;
+  }
+  .section-title { font-size: 12px; font-weight: 700; color: #a89990; letter-spacing: 0.5px; text-transform: uppercase; }
+  .section-action { font-size: 12px; color: #e8845a; font-weight: 600; }
+
+  /* date item */
+  .date-item { padding: 12px 16px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #f7f4f1; }
+  .date-item:last-child { border-bottom: none; }
+  .date-icon { font-size: 20px; }
+  .date-info { flex: 1; }
+  .date-label { font-size: 14px; font-weight: 600; color: #2d2926; }
+  .date-sub { font-size: 12px; color: #a89990; margin-top: 1px; }
+  .date-badge {
+    font-size: 11px; font-weight: 600; color: #e8845a;
+    background: #fff0e8; border-radius: 8px; padding: 3px 8px;
+  }
+
+  /* timeline */
+  .timeline-item { padding: 14px 16px; display: flex; gap: 10px; border-bottom: 1px solid #f7f4f1; }
+  .timeline-item:last-child { border-bottom: none; }
+  .timeline-dot-wrap { display: flex; flex-direction: column; align-items: center; padding-top: 4px; }
+  .timeline-dot { width: 10px; height: 10px; border-radius: 50%; background: #e8845a; flex-shrink: 0; }
+  .timeline-line { width: 1.5px; flex: 1; background: #f0ece8; margin-top: 4px; }
+  .timeline-content { flex: 1; min-width: 0; }
+  .timeline-date { font-size: 11px; color: #a89990; font-weight: 600; margin-bottom: 4px; }
+  .timeline-text { font-size: 14px; color: #4a3d35; line-height: 1.6; }
+
+  /* add interaction box */
+  .add-interaction {
+    margin: 12px 20px 100px; background: #fff; border-radius: 16px;
+    padding: 14px 16px; border: 1.5px dashed #e0d8d2;
+  }
+  .add-interaction-input {
+    font-size: 15px; color: #a89990; margin-bottom: 10px;
+  }
+  .add-interaction-footer { display: flex; justify-content: space-between; align-items: center; }
+  .add-date { font-size: 12px; color: #c8bdb5; }
+  .btn-add {
+    height: 32px; padding: 0 16px; border-radius: 10px;
+    background: #e8845a; color: #fff; font-size: 13px; font-weight: 600;
+    display: flex; align-items: center; opacity: 0.4;
+  }
+</style>
+</head>
+<body>
+
+<h1 class="page-title">Knowho — UI 原型</h1>
+<p class="page-sub">移动端设计 · 375px · 温暖社区风格</p>
+
+<div class="phone-grid">
+
+  <!-- PAGE 1: LOGIN -->
+  <div class="phone-wrap">
+    <div class="phone-label">① 登录页</div>
+    <div class="phone" style="min-height: 812px;">
+      <div class="login-page">
+        <div class="status-bar" style="background: transparent;">
+          <span class="time">9:41</span>
+          <div class="icons">
+            <span>📶</span><span>🔋</span>
+          </div>
+        </div>
+        <div class="login-hero">
+          <div class="login-logo">🤝</div>
+          <div class="login-brand">Knowho</div>
+          <div class="login-tagline">帮你记住每一个认识的人，<br>下次见面更有温度</div>
+
+          <div class="feature-list">
+            <div class="feature-item">
+              <div class="feature-icon orange">⚡</div>
+              <div class="feature-text"><strong>30秒</strong> 记下一个新朋友</div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon green">🎂</div>
+              <div class="feature-text"><strong>自动提醒</strong> 生日、重要纪念日</div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon blue">💬</div>
+              <div class="feature-text">见面前<strong>快速回顾</strong>，聊天不尬场</div>
+            </div>
+          </div>
+        </div>
+        <div class="login-footer">
+          <div class="btn-google">
+            <span class="google-icon"></span>
+            用 Google 账号登录
+          </div>
+          <div class="login-hint">登录即代表你同意我们的服务协议<br>我们不会向你推销任何东西 🙂</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 2: CONTACT LIST -->
+  <div class="phone-wrap">
+    <div class="phone-label">② 认识的人（列表）</div>
+    <div class="phone" style="min-height: 812px;">
+      <div class="list-page">
+        <div class="status-bar" style="background: #fff;">
+          <span class="time">9:41</span>
+          <div class="icons"><span>📶</span><span>🔋</span></div>
+        </div>
+        <div class="list-header">
+          <div class="list-header-top">
+            <h2>认识的人 <span style="font-size:14px;font-weight:400;color:#a89990;">12</span></h2>
+            <div style="display:flex;gap:8px;">
+              <div class="btn-icon">🔔</div>
+              <div class="btn-icon">👤</div>
+            </div>
+          </div>
+          <div class="search-bar">
+            <span>🔍</span>
+            <span>搜索认识的人…</span>
+          </div>
+        </div>
+        <div class="tag-strip">
+          <div class="tag-chip active">全部</div>
+          <div class="tag-chip">读书会</div>
+          <div class="tag-chip">健身群</div>
+          <div class="tag-chip">邻居</div>
+          <div class="tag-chip">社群</div>
+          <div class="tag-chip">家人</div>
+        </div>
+        <div class="contact-list">
+          <div class="contact-card">
+            <div class="avatar av-orange">阿</div>
+            <div class="contact-info">
+              <div class="contact-tag-badge">读书会</div>
+              <div class="contact-name">阿伟</div>
+              <div class="contact-meta"><span>3天前互动</span><span class="dot"></span><span>他喜欢骑行</span></div>
+            </div>
+            <div class="contact-arrow">›</div>
+          </div>
+          <div class="contact-card">
+            <div class="avatar av-green">小</div>
+            <div class="contact-info">
+              <div class="contact-tag-badge">邻居</div>
+              <div class="contact-name">小林</div>
+              <div class="contact-meta"><span>2周前互动</span><span class="dot"></span><span>🎂 生日在6天后</span></div>
+            </div>
+            <div class="contact-arrow">›</div>
+          </div>
+          <div class="contact-card">
+            <div class="avatar av-purple">月</div>
+            <div class="contact-info">
+              <div class="contact-tag-badge">健身群</div>
+              <div class="contact-name">月月</div>
+              <div class="contact-meta"><span>5天前互动</span></div>
+            </div>
+            <div class="contact-arrow">›</div>
+          </div>
+          <div class="contact-card">
+            <div class="avatar av-blue">大</div>
+            <div class="contact-info">
+              <div class="contact-tag-badge">社群</div>
+              <div class="contact-name">大刘</div>
+              <div class="contact-meta"><span>1个月前互动</span></div>
+            </div>
+            <div class="contact-arrow">›</div>
+          </div>
+          <div class="contact-card">
+            <div class="avatar av-pink">芸</div>
+            <div class="contact-info">
+              <div class="contact-tag-badge">读书会</div>
+              <div class="contact-name">芸芸</div>
+              <div class="contact-meta"><span>昨天互动</span><span class="dot"></span><span>她女儿学钢琴</span></div>
+            </div>
+            <div class="contact-arrow">›</div>
+          </div>
+        </div>
+
+        <div class="fab-label">认识新朋友了？</div>
+        <div class="fab">＋</div>
+
+        <div class="bottom-nav">
+          <div class="nav-item active">
+            <div class="nav-icon">👥</div>
+            <div>认识的人</div>
+          </div>
+          <div class="nav-item">
+            <div class="nav-icon">🔔</div>
+            <div>提醒</div>
+          </div>
+          <div class="nav-item">
+            <div class="nav-icon">⚙️</div>
+            <div>设置</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 3: ADD CONTACT -->
+  <div class="phone-wrap">
+    <div class="phone-label">③ 认识新朋友</div>
+    <div class="phone" style="min-height: 812px;">
+      <div class="add-page">
+        <div class="status-bar" style="background: #fff;">
+          <span class="time">9:41</span>
+          <div class="icons"><span>📶</span><span>🔋</span></div>
+        </div>
+        <div class="add-header">
+          <div class="back-btn">‹</div>
+          <h2>认识新朋友了？</h2>
+        </div>
+        <div class="form-body">
+          <div class="form-section">
+            <div class="form-row">
+              <div class="form-label">叫什么名字 *</div>
+              <div class="form-input focused">阿伟｜</div>
+            </div>
+            <div class="form-row">
+              <div class="form-label">在哪儿认识的</div>
+              <div class="form-input placeholder">读书会、健身房、邻居…</div>
+            </div>
+            <div class="form-row" style="border-bottom:none;">
+              <div class="form-label">让你记住 Ta 的那件事</div>
+              <div class="form-input placeholder">Ta 说了什么，或者你对 Ta 的第一印象…</div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <div class="tag-picker">
+              <div class="tag-picker-label">加个标签</div>
+              <div class="tag-options">
+                <div class="tag-option selected">读书会</div>
+                <div class="tag-option">健身群</div>
+                <div class="tag-option">邻居</div>
+                <div class="tag-option">工作</div>
+                <div class="tag-option">社群</div>
+                <div class="tag-option">家人</div>
+                <div class="tag-option">朋友</div>
+                <div class="tag-option add">＋ 新标签</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- voice entry placeholder -->
+          <div style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:#fff;border-radius:16px;border:1.5px dashed #e0d8d2;">
+            <div style="width:40px;height:40px;border-radius:12px;background:#f7f4f1;display:flex;align-items:center;justify-content:center;font-size:20px;">🎙️</div>
+            <div>
+              <div style="font-size:14px;font-weight:600;color:#a89990;">语音备注</div>
+              <div style="font-size:12px;color:#c8bdb5;">即将上线</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="submit-area">
+          <div class="btn-submit">记下来 ✓</div>
+          <div class="voice-hint">
+            <span style="font-size:16px;">💡</span>
+            只有名字是必填的，其他可以之后补
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 4: CONTACT PROFILE -->
+  <div class="phone-wrap">
+    <div class="phone-label">④ 个人档案</div>
+    <div class="phone" style="min-height: 900px;">
+      <div class="profile-page">
+        <div class="status-bar" style="background: #fff;">
+          <span class="time">9:41</span>
+          <div class="icons"><span>📶</span><span>🔋</span></div>
+        </div>
+        <div class="profile-header">
+          <div class="profile-header-top">
+            <div class="back-btn">‹</div>
+            <div style="font-size:13px;font-weight:600;color:#a89990;">认识的人</div>
+            <div class="btn-icon">✏️</div>
+          </div>
+        </div>
+
+        <div class="profile-hero">
+          <div class="profile-avatar">阿</div>
+          <div class="profile-name">阿伟</div>
+          <div class="profile-tags">
+            <span class="profile-tag">读书会</span>
+          </div>
+          <div class="profile-met">认识于 读书会 · 2026年3月</div>
+        </div>
+
+        <!-- hint card -->
+        <div class="hint-card">
+          <div class="hint-card-title">📋 见面前看一眼</div>
+          <div class="hint-card-text">上次（5月20日）：他说他女儿刚考上大学了，暑假准备去旅行庆祝。</div>
+          <div class="hint-birthday">🎂 他的生日在 12 天后（6月12日）</div>
+        </div>
+
+        <!-- important dates -->
+        <div class="profile-section">
+          <div class="section-header">
+            <div class="section-title">重要日期</div>
+            <div class="section-action">＋ 添加</div>
+          </div>
+          <div class="date-item">
+            <div class="date-icon">🎂</div>
+            <div class="date-info">
+              <div class="date-label">生日</div>
+              <div class="date-sub">6月12日</div>
+            </div>
+            <div class="date-badge">12天后</div>
+          </div>
+        </div>
+
+        <!-- timeline -->
+        <div class="profile-section">
+          <div class="section-header">
+            <div class="section-title">我们聊过什么</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot-wrap">
+              <div class="timeline-dot"></div>
+              <div class="timeline-line"></div>
+            </div>
+            <div class="timeline-content">
+              <div class="timeline-date">2026年5月20日</div>
+              <div class="timeline-text">他说他女儿刚考上大学了，暑假准备去旅行庆祝。顺便提到了下周要参加健身比赛。</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot-wrap">
+              <div class="timeline-dot" style="background:#d4c8c0;"></div>
+            </div>
+            <div class="timeline-content">
+              <div class="timeline-date">2026年4月8日</div>
+              <div class="timeline-text">在读书会第一次见面，聊了《人类简史》，他很喜欢骑行，推荐了一条周末路线。</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- add interaction -->
+        <div class="add-interaction">
+          <div class="add-interaction-input">今天聊了什么？</div>
+          <div class="add-interaction-footer">
+            <div class="add-date">📅 今天 · 2026/5/31</div>
+            <div class="btn-add">记一条</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/sha/.claude/plugins/cache/claude-plugins-official/superpowers/5.1.0/skills/subagent-driven-development/**)",
+      "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir=false --import-alias=\"@/*\" --no-turbopack --yes)",
+      "Read(//Users/sha/Code/AI-code-26/**)",
+      "Bash(npx create-next-app@latest konwho-scaffold --typescript --tailwind --eslint --app --src-dir=false --import-alias=\"@/*\" --no-turbopack --yes)",
+      "Bash(rm -rf /Users/sha/Code/AI-code-26/konwho-scaffold)",
+      "Bash(npm install *)",
+      "Bash(npx shadcn@latest init --defaults)",
+      "Bash(npx shadcn@latest init)",
+      "Bash(npx shadcn@latest init --style default --base-color stone)",
+      "Bash(npx shadcn@latest init --help)",
+      "Bash(npx shadcn@latest init --force)",
+      "Bash(pkill -f \"shadcn\")",
+      "Bash(npm run *)",
+      "Bash(curl -s http://localhost:3000)",
+      "Bash(pkill -f \"next dev\")",
+      "Bash(cat /tmp/nextdev.log)",
+      "Read(//private/tmp/**)",
+      "Bash(git init *)",
+      "Bash(git add *)"
+    ],
+    "additionalDirectories": [
+      "/Users/sha/Code/AI-code-26/konwho-scaffold",
+      "/tmp"
+    ]
+  }
+}
