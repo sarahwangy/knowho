@@ -14,20 +14,25 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   callbacks: {
     session({ session, user }) {
+      if (!user?.id) throw new Error("User ID missing from database record")
       session.user.id = user.id
       return session
     },
     async signIn({ user, account }) {
       if (account?.provider === "google" && user.id) {
-        await Promise.all(
-          PRESET_TAGS.map((name) =>
-            prisma.tag.upsert({
-              where: { userId_name: { userId: user.id!, name } },
-              update: {},
-              create: { userId: user.id!, name, isPreset: true },
-            })
+        try {
+          await Promise.all(
+            PRESET_TAGS.map((name) =>
+              prisma.tag.upsert({
+                where: { userId_name: { userId: user.id!, name } },
+                update: {},
+                create: { userId: user.id!, name, isPreset: true },
+              })
+            )
           )
-        )
+        } catch (error) {
+          console.error("Failed to seed preset tags for user", user.id, error)
+        }
       }
       return true
     },
