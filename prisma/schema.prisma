@@ -1,0 +1,117 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ── Auth.js required models ──────────────────────────────────────────────────
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ── App models ────────────────────────────────────────────────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  contacts      Contact[]
+  tags          Tag[]
+  createdAt     DateTime  @default(now())
+}
+
+model Contact {
+  id             String          @id @default(cuid())
+  userId         String
+  user           User            @relation(fields: [userId], references: [id])
+  name           String
+  metAt          String?
+  impression     String?
+  contactFreq    String?
+  tags           Tag[]
+  importantDates ImportantDate[]
+  interactions   Interaction[]
+  shareTokens    ShareToken[]
+  createdAt      DateTime        @default(now())
+  deletedAt      DateTime?
+}
+
+model Tag {
+  id       String    @id @default(cuid())
+  userId   String
+  user     User      @relation(fields: [userId], references: [id])
+  name     String
+  isPreset Boolean   @default(false)
+  contacts Contact[]
+
+  @@unique([userId, name])
+}
+
+model ImportantDate {
+  id               String  @id @default(cuid())
+  contactId        String
+  contact          Contact @relation(fields: [contactId], references: [id])
+  type             String
+  label            String?
+  month            Int
+  day              Int
+  year             Int?
+  remindDaysBefore Int     @default(3)
+}
+
+model Interaction {
+  id        String   @id @default(cuid())
+  contactId String
+  contact   Contact  @relation(fields: [contactId], references: [id])
+  content   String
+  date      DateTime
+  createdAt DateTime @default(now())
+}
+
+model ShareToken {
+  id        String    @id @default(cuid())
+  contactId String
+  contact   Contact   @relation(fields: [contactId], references: [id])
+  token     String    @unique @default(cuid())
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+}
