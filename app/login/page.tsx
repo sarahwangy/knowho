@@ -78,12 +78,6 @@ export default async function LoginPage() {
         </p>
       </div>
 
-      <style>{`
-        @keyframes kwBlink {
-          0%, 92%, 100% { transform: scaleY(1); }
-          96% { transform: scaleY(0.1); }
-        }
-      `}</style>
     </main>
   )
 }
