@@ -1,3 +1,4 @@
+// app/api/contacts/[id]/dates/[dateId]/route.ts
 import { NextResponse } from "next/server"
 import { auth } from "@/auth"
 import { prisma } from "@/lib/db"
@@ -20,14 +21,13 @@ export async function DELETE(
     return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   }
 
-  const importantDate = await prisma.importantDate.findFirst({
+  const { count } = await prisma.importantDate.deleteMany({
     where: { id: dateId, contactId },
   })
-  if (!importantDate) {
+
+  if (count === 0) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   }
-
-  await prisma.importantDate.delete({ where: { id: dateId } })
 
   return new NextResponse(null, { status: 204 })
 }
