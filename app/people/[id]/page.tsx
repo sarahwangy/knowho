@@ -141,11 +141,14 @@ export default function ContactProfilePage() {
         const tag = await res.json()
         ids.push(tag.id)
       } else if (res.status === 409) {
-        const allTags: Tag[] = await fetch("/api/tags").then((r) => r.json())
-        const existing = allTags.find(
-          (t) => t.name.toLowerCase() === name.toLowerCase()
-        )
-        if (existing) ids.push(existing.id)
+        const tagsRes = await fetch("/api/tags")
+        if (tagsRes.ok) {
+          const allTags: Tag[] = await tagsRes.json()
+          const existing = allTags.find(
+            (t) => t.name.toLowerCase() === name.toLowerCase()
+          )
+          if (existing) ids.push(existing.id)
+        }
       }
     }
     return ids
@@ -176,7 +179,7 @@ export default function ContactProfilePage() {
       }
 
       setEditOpen(false)
-      await loadContact()
+      await loadContact(new AbortController().signal)
     } catch {
       setEditError("保存失败，请重试")
     }
