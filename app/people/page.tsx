@@ -31,14 +31,17 @@ export default function PeoplePage() {
 
   useEffect(() => {
     Promise.all([
-      fetch("/api/contacts").then((r) => r.json()),
-      fetch("/api/tags").then((r) => r.json()),
+      fetch("/api/contacts").then((r) => r.json()).catch(() => null),
+      fetch("/api/tags").then((r) => r.json()).catch(() => null),
     ])
       .then(([contactsData, tagsData]) => {
-        setContacts(Array.isArray(contactsData) ? contactsData : [])
+        if (!contactsData) {
+          setError("加载失败，请刷新重试")
+        } else {
+          setContacts(Array.isArray(contactsData) ? contactsData : [])
+        }
         setTags(Array.isArray(tagsData) ? tagsData : [])
       })
-      .catch(() => setError("加载失败，请刷新重试"))
       .finally(() => setLoading(false))
   }, [])
 
