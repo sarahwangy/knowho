@@ -101,3 +101,26 @@ export async function PATCH(
 
   return NextResponse.json(contact)
 }
+
+export async function DELETE(
+  _request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const session = await auth()
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  }
+
+  const { id } = await params
+  const owned = await getOwnedContact(id, session.user.id)
+  if (!owned) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+  }
+
+  await prisma.contact.update({
+    where: { id },
+    data: { deletedAt: new Date() },
+  })
+
+  return new NextResponse(null, { status: 204 })
+}
