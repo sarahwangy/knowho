@@ -45,7 +45,7 @@ export function TagPicker({ value, onChange }: TagPickerProps) {
 
   function toggleTag(tag: Tag) {
     if (isSelected(tag)) {
-      onChange(value.filter((v) => v.id !== tag.id && v.name !== tag.name))
+      onChange(value.filter((v) => v.id !== tag.id || v.name !== tag.name))
     } else {
       onChange([...value, { id: tag.id, name: tag.name }])
     }

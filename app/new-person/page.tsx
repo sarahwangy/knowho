@@ -58,6 +58,10 @@ export default function NewPersonPage() {
       }
 
       const contact = await res.json()
+      if (!contact?.id) {
+        setApiError("好像出了点问题，再试一次？")
+        return
+      }
       router.push(`/people/${contact.id}`)
     } catch {
       setApiError("好像出了点问题，再试一次？")
