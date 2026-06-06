@@ -74,13 +74,15 @@ export async function PATCH(
 
   const { tagIds, ...scalarFields } = parsed.data
 
-  if (tagIds !== undefined && tagIds.length > 0) {
-    const ownedTags = await prisma.tag.findMany({
-      where: { id: { in: tagIds }, userId },
-      select: { id: true },
-    })
-    if (ownedTags.length !== tagIds.length) {
-      return NextResponse.json({ error: "Invalid tagIds" }, { status: 400 })
+  if (tagIds !== undefined) {
+    if (tagIds.length > 0) {
+      const ownedTags = await prisma.tag.findMany({
+        where: { id: { in: tagIds }, userId },
+        select: { id: true },
+      })
+      if (ownedTags.length !== tagIds.length) {
+        return NextResponse.json({ error: "Invalid tagIds" }, { status: 400 })
+      }
     }
   }
 
