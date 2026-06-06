@@ -1,3 +1,4 @@
+// app/api/interactions/[id]/route.ts
 import { NextResponse } from "next/server"
 import { auth } from "@/auth"
 import { prisma } from "@/lib/db"
@@ -13,16 +14,13 @@ export async function DELETE(
 
   const { id } = await params
 
-  const interaction = await prisma.interaction.findFirst({
-    where: { id },
-    include: { contact: { select: { userId: true } } },
+  const { count } = await prisma.interaction.deleteMany({
+    where: { id, contact: { userId: session.user.id } },
   })
 
-  if (!interaction || interaction.contact.userId !== session.user.id) {
+  if (count === 0) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   }
-
-  await prisma.interaction.delete({ where: { id } })
 
   return new NextResponse(null, { status: 204 })
 }
