@@ -2,8 +2,16 @@
 
 import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
 import { ArrowLeft, Plus } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { Label } from "@/components/ui/label"
+import { Button } from "@/components/ui/button"
+import { TagPicker, type SelectedTag } from "@/components/tag-picker"
 
 interface Tag {
   id: string
@@ -39,6 +47,14 @@ interface Contact {
   interactions: Interaction[]
 }
 
+const editSchema = z.object({
+  name: z.string().min(1, "姓名不能为空"),
+  metAt: z.string().optional(),
+  impression: z.string().optional(),
+})
+
+type EditValues = z.infer<typeof editSchema>
+
 function dateEmoji(type: string) {
   if (type === "生日") return "🎂"
   if (type === "纪念日") return "🗓️"
@@ -65,6 +81,15 @@ export default function ContactProfilePage() {
   const [error, setError] = useState<string | null>(null)
   const [deleting, setDeleting] = useState(false)
   const [editOpen, setEditOpen] = useState(false)
+  const [editTags, setEditTags] = useState<SelectedTag[]>([])
+  const [editError, setEditError] = useState<string | null>(null)
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<EditValues>({ resolver: zodResolver(editSchema) })
 
   async function loadContact(signal?: AbortSignal) {
     setLoading(true)
@@ -75,7 +100,8 @@ export default function ContactProfilePage() {
         setError("加载失败，请返回重试")
         return
       }
-      setContact(await res.json())
+      const data: Contact = await res.json()
+      setContact(data)
     } catch (err) {
       if (err instanceof Error && err.name === "AbortError") return
       setError("加载失败，请返回重试")
@@ -90,6 +116,71 @@ export default function ContactProfilePage() {
     return () => controller.abort()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id])
+
+  function openEdit() {
+    if (!contact) return
+    reset({
+      name: contact.name,
+      metAt: contact.metAt ?? "",
+      impression: contact.impression ?? "",
+    })
+    setEditTags(contact.tags.map((t) => ({ id: t.id, name: t.name })))
+    setEditError(null)
+    setEditOpen(true)
+  }
+
+  async function resolveNewTags(newTagNames: string[]): Promise<string[]> {
+    const ids: string[] = []
+    for (const name of newTagNames) {
+      const res = await fetch("/api/tags", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name }),
+      })
+      if (res.status === 201) {
+        const tag = await res.json()
+        ids.push(tag.id)
+      } else if (res.status === 409) {
+        const allTags: Tag[] = await fetch("/api/tags").then((r) => r.json())
+        const existing = allTags.find(
+          (t) => t.name.toLowerCase() === name.toLowerCase()
+        )
+        if (existing) ids.push(existing.id)
+      }
+    }
+    return ids
+  }
+
+  async function onEditSubmit(data: EditValues) {
+    setEditError(null)
+    try {
+      const existingTagIds = editTags.filter((t) => t.id).map((t) => t.id as string)
+      const newTagNames = editTags.filter((t) => !t.id).map((t) => t.name)
+      const newTagIds = await resolveNewTags(newTagNames)
+      const tagIds = [...existingTagIds, ...newTagIds]
+
+      const res = await fetch(`/api/contacts/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: data.name,
+          metAt: data.metAt || null,
+          impression: data.impression || null,
+          tagIds,
+        }),
+      })
+
+      if (!res.ok) {
+        setEditError("保存失败，请重试")
+        return
+      }
+
+      setEditOpen(false)
+      await loadContact()
+    } catch {
+      setEditError("保存失败，请重试")
+    }
+  }
 
   async function handleDelete() {
     if (!window.confirm("确定删除？此操作不可撤销")) return
@@ -152,7 +243,7 @@ export default function ContactProfilePage() {
           返回
         </button>
         <button
-          onClick={() => setEditOpen(true)}
+          onClick={openEdit}
           className="text-sm text-[#2d2926] font-medium"
         >
           编辑
@@ -258,12 +349,78 @@ export default function ContactProfilePage() {
         </div>
       </div>
 
-      {/* Edit sheet placeholder */}
+      {/* Edit sheet */}
       {editOpen && (
-        <div
-          className="fixed inset-0 bg-black/40 z-40"
-          onClick={() => setEditOpen(false)}
-        />
+        <>
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-black/40 z-40"
+            onClick={() => setEditOpen(false)}
+          />
+          {/* Sheet */}
+          <div className="fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-2xl px-5 pt-5 pb-10 max-h-[85vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-base font-semibold text-[#2d2926]">编辑联系人</h2>
+              <button
+                onClick={() => setEditOpen(false)}
+                className="text-sm text-[#8b7d72]"
+              >
+                取消
+              </button>
+            </div>
+
+            {editError && (
+              <div className="mb-4 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+                {editError}
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit(onEditSubmit)} className="space-y-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="edit-name" className="text-[#2d2926]">姓名</Label>
+                <Input
+                  id="edit-name"
+                  {...register("name")}
+                  className={errors.name ? "border-red-400" : ""}
+                />
+                {errors.name && (
+                  <p className="text-xs text-red-500">{errors.name.message}</p>
+                )}
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="edit-metAt" className="text-[#2d2926]">认识场合</Label>
+                <Input
+                  id="edit-metAt"
+                  placeholder="读书会、健身房…"
+                  {...register("metAt")}
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="edit-impression" className="text-[#2d2926]">一句话印象</Label>
+                <Textarea
+                  id="edit-impression"
+                  rows={3}
+                  {...register("impression")}
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-[#2d2926]">标签</Label>
+                <TagPicker value={editTags} onChange={setEditTags} />
+              </div>
+
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full bg-[#2d2926] text-white hover:bg-[#3d3533]"
+              >
+                {isSubmitting ? "保存中…" : "保存"}
+              </Button>
+            </form>
+          </div>
+        </>
       )}
     </main>
   )
