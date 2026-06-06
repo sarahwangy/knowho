@@ -46,7 +46,7 @@ function dateEmoji(type: string) {
 }
 
 function formatDate(d: ImportantDate) {
-  const label = d.type === "自定义" ? d.label : d.type
+  const label = d.type === "自定义" ? (d.label ?? "自定义") : d.type
   const year = d.year ? `（${d.year}年）` : ""
   return `${dateEmoji(d.type)} ${label} · ${d.month}月${d.day}日${year}`
 }
@@ -66,17 +66,18 @@ export default function ContactProfilePage() {
   const [deleting, setDeleting] = useState(false)
   const [editOpen, setEditOpen] = useState(false)
 
-  async function loadContact() {
+  async function loadContact(signal?: AbortSignal) {
     setLoading(true)
     setError(null)
     try {
-      const res = await fetch(`/api/contacts/${id}`)
+      const res = await fetch(`/api/contacts/${id}`, { signal })
       if (!res.ok) {
         setError("加载失败，请返回重试")
         return
       }
       setContact(await res.json())
-    } catch {
+    } catch (err) {
+      if (err instanceof Error && err.name === "AbortError") return
       setError("加载失败，请返回重试")
     } finally {
       setLoading(false)
@@ -84,7 +85,9 @@ export default function ContactProfilePage() {
   }
 
   useEffect(() => {
-    loadContact()
+    const controller = new AbortController()
+    loadContact(controller.signal)
+    return () => controller.abort()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id])
 
@@ -95,6 +98,8 @@ export default function ContactProfilePage() {
       const res = await fetch(`/api/contacts/${id}`, { method: "DELETE" })
       if (res.ok) {
         router.push("/people")
+      } else {
+        setError("删除失败，请重试")
       }
     } finally {
       setDeleting(false)
