@@ -4,6 +4,34 @@ import { auth } from "@/auth"
 import { prisma } from "@/lib/db"
 import { z } from "zod"
 
+export async function GET(request: Request) {
+  const session = await auth()
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  }
+
+  const { searchParams } = new URL(request.url)
+  const tagId = searchParams.get("tagId") ?? undefined
+  const search = searchParams.get("search") ?? undefined
+
+  const contacts = await prisma.contact.findMany({
+    where: {
+      userId: session.user.id,
+      deletedAt: null,
+      ...(tagId ? { tags: { some: { id: tagId } } } : {}),
+      ...(search
+        ? { name: { contains: search, mode: "insensitive" } }
+        : {}),
+    },
+    orderBy: { createdAt: "desc" },
+    include: {
+      tags: { select: { id: true, name: true, isPreset: true } },
+    },
+  })
+
+  return NextResponse.json(contacts)
+}
+
 const createContactSchema = z.object({
   name: z.string().min(1, "name is required"),
   metAt: z.string().optional(),
@@ -27,7 +55,6 @@ export async function POST(request: Request) {
 
   const { name, metAt, impression, tagIds, newTags } = parsed.data
 
-  // Verify all provided tagIds belong to this user
   if (tagIds.length > 0) {
     const ownedTags = await prisma.tag.findMany({
       where: { id: { in: tagIds }, userId },
@@ -38,7 +65,6 @@ export async function POST(request: Request) {
     }
   }
 
-  // Upsert newTags and collect their IDs
   const upsertedTags = await Promise.all(
     newTags.map((tagName) =>
       prisma.tag.upsert({
