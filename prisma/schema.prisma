@@ -67,6 +67,7 @@ model Contact {
   name           String
   metAt          String?
   impression     String?
+  avatar         String?
   contactFreq    String?
   tags           Tag[]
   importantDates ImportantDate[]

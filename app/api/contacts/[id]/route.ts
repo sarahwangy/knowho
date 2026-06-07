@@ -43,6 +43,7 @@ const patchContactSchema = z.object({
   name: z.string().min(1).optional(),
   metAt: z.string().nullable().optional(),
   impression: z.string().nullable().optional(),
+  avatar: z.string().nullable().optional(),
   contactFreq: z
     .enum(["每周", "每两周", "每月", "每季度"])
     .nullable()
