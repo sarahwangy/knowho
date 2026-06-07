@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -22,15 +22,26 @@ type FormValues = z.infer<typeof schema>
 
 export default function NewPersonPage() {
   const router = useRouter()
-  const [selectedTags, setSelectedTags] = useState<SelectedTag[]>([])
+  const searchParams = useSearchParams()
+  const [selectedTags, setSelectedTags] = useState<SelectedTag[]>(() => {
+    const tagsParam = searchParams.get("tags")
+    if (!tagsParam) return []
+    return tagsParam.split(",").filter(Boolean).map((name) => ({ name }))
+  })
   const [apiError, setApiError] = useState<string | null>(null)
 
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
+    defaultValues: {
+      name: searchParams.get("name") ?? "",
+      metAt: searchParams.get("metAt") ?? "",
+      impression: searchParams.get("impression") ?? "",
+    },
   })
 
   async function onSubmit(data: FormValues) {
