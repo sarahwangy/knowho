@@ -249,7 +249,7 @@ export default function PeoplePage() {
       {/* FAB */}
       <Link
         href="/new-person"
-        className="fixed bottom-6 right-6 flex items-center gap-2 rounded-full bg-[#3d6b2e] px-4 py-3 text-sm font-medium text-white shadow-lg hover:bg-[#2d5520]"
+        className="fixed bottom-20 md:bottom-8 right-4 md:right-6 flex items-center gap-2 rounded-full bg-[#3d6b2e] px-4 py-3 text-sm font-medium text-white shadow-lg hover:bg-[#2d5520] transition-colors"
       >
         <Plus className="h-4 w-4" />
         认识新朋友了？

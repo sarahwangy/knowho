@@ -111,7 +111,7 @@ export function AiAssistant() {
       {/* FAB */}
       <button
         onClick={() => setOpen(true)}
-        className="fixed bottom-20 left-4 md:bottom-6 z-40 w-12 h-12 rounded-full bg-[#3d6b2e] text-white shadow-lg flex items-center justify-center hover:bg-[#2d5520] transition-colors"
+        className="fixed right-4 top-1/2 -translate-y-1/2 z-40 flex items-center justify-center w-12 h-12 rounded-full bg-[#3d6b2e] text-white shadow-lg hover:bg-[#2d5520] transition-colors"
         aria-label="AI 助手"
       >
         <Sparkles className="h-5 w-5" />
