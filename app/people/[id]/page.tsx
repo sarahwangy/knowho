@@ -83,11 +83,6 @@ function dateEmoji(type: string) {
   return "📌"
 }
 
-function formatDate(d: ImportantDate) {
-  const label = d.type === "自定义" ? (d.label ?? "自定义") : d.type
-  const year = d.year ? `（${d.year}年）` : ""
-  return `${dateEmoji(d.type)} ${label} · ${d.month}月${d.day}日${year}`
-}
 
 function formatInteractionDate(dateStr: string) {
   return dateStr.slice(0, 10)
@@ -384,7 +379,7 @@ export default function ContactProfilePage() {
         </button>
         <button
           onClick={openEdit}
-          className="text-sm text-[#2d2926] font-medium"
+          className="text-sm font-semibold text-white bg-[#3d6b2e] hover:bg-[#2d5520] rounded-full px-4 py-1.5 transition-colors"
         >
           编辑
         </button>
@@ -434,22 +429,34 @@ export default function ContactProfilePage() {
           {contact.importantDates.length === 0 ? (
             <p className="text-sm text-[#8b7d72]">暂无重要日期</p>
           ) : (
-            <ul className="space-y-2">
-              {contact.importantDates.map((d) => (
-                <li key={d.id} className="flex items-center justify-between gap-2">
-                  <span className="text-sm text-[#2d2926] flex-1 min-w-0">{formatDate(d)}</span>
-                  <button
-                    type="button"
-                    onClick={() => handleDeleteDate(d.id)}
-                    disabled={deletingDateId !== null}
-                    title="删除日期"
-                    className="shrink-0 text-[#c0b8b0] hover:text-red-400 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </button>
-                </li>
-              ))}
-            </ul>
+            <table className="w-full text-sm">
+              <tbody>
+                {[...contact.importantDates]
+                  .sort((a, b) => a.month !== b.month ? a.month - b.month : a.day - b.day)
+                  .map((d) => (
+                    <tr key={d.id} className="border-b border-[#f0ebe6] last:border-0">
+                      <td className="py-2 pr-3 text-[#8b7d72] whitespace-nowrap font-medium w-20">
+                        {d.month}月{d.day}日
+                      </td>
+                      <td className="py-2 text-[#2d2926]">
+                        {dateEmoji(d.type)} {d.type === "自定义" ? (d.label ?? "自定义") : d.type}
+                        {d.year && <span className="text-[#8b7d72] text-xs ml-1">({d.year}年)</span>}
+                      </td>
+                      <td className="py-2 pl-2 text-right">
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteDate(d.id)}
+                          disabled={deletingDateId !== null}
+                          title="删除日期"
+                          className="text-[#c0b8b0] hover:text-red-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
           )}
           <button
             type="button"
@@ -521,7 +528,7 @@ export default function ContactProfilePage() {
             onClick={() => setEditOpen(false)}
           />
           {/* Sheet */}
-          <div className="fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-2xl px-5 pt-5 pb-10 max-h-[85vh] overflow-y-auto">
+          <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 bg-white rounded-2xl px-5 pt-5 pb-6 w-[calc(100%-2rem)] max-w-md max-h-[85vh] overflow-y-auto shadow-2xl">
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-base font-semibold text-[#2d2926]">编辑联系人</h2>
               <button
@@ -672,7 +679,7 @@ export default function ContactProfilePage() {
             className="fixed inset-0 bg-black/40 z-40"
             onClick={() => setDateSheetOpen(false)}
           />
-          <div className="fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-2xl px-5 pt-5 pb-10 max-h-[85vh] overflow-y-auto">
+          <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 bg-white rounded-2xl px-5 pt-5 pb-6 w-[calc(100%-2rem)] max-w-md max-h-[85vh] overflow-y-auto shadow-2xl">
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-base font-semibold text-[#2d2926]">添加日期</h2>
               <button
