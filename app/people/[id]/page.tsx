@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { ArrowLeft, Plus } from "lucide-react"
+import { ArrowLeft, Plus, Trash2 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -101,6 +101,7 @@ export default function ContactProfilePage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [deleting, setDeleting] = useState(false)
+  const [deletingInteractionId, setDeletingInteractionId] = useState<string | null>(null)
   const [editOpen, setEditOpen] = useState(false)
   const [editTags, setEditTags] = useState<SelectedTag[]>([])
   const [editError, setEditError] = useState<string | null>(null)
@@ -302,6 +303,21 @@ export default function ContactProfilePage() {
     }
   }
 
+  async function handleDeleteInteraction(interactionId: string) {
+    if (!window.confirm("确定删除这条互动记录？")) return
+    setDeletingInteractionId(interactionId)
+    try {
+      const res = await fetch(`/api/interactions/${interactionId}`, { method: "DELETE" })
+      if (res.ok) {
+        await loadContact(new AbortController().signal)
+      } else {
+        setError("删除失败，请重试")
+      }
+    } finally {
+      setDeletingInteractionId(null)
+    }
+  }
+
   if (loading) {
     return (
       <main className="min-h-screen bg-[#f7f4f1] p-5">
@@ -422,11 +438,22 @@ export default function ContactProfilePage() {
           ) : (
             <ul className="space-y-3">
               {contact.interactions.map((i) => (
-                <li key={i.id}>
-                  <p className="text-sm text-[#2d2926]">{i.content}</p>
-                  <p className="text-xs text-[#8b7d72] mt-0.5">
-                    {formatInteractionDate(i.date)}
-                  </p>
+                <li key={i.id} className="flex items-start justify-between gap-2">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-[#2d2926]">{i.content}</p>
+                    <p className="text-xs text-[#8b7d72] mt-0.5">
+                      {formatInteractionDate(i.date)}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteInteraction(i.id)}
+                    disabled={deletingInteractionId === i.id}
+                    title="删除互动记录"
+                    className="shrink-0 mt-0.5 text-[#c0b8b0] hover:text-red-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
                 </li>
               ))}
             </ul>
