@@ -197,6 +197,40 @@ export default function ContactProfilePage() {
     }
   }
 
+  function openDateSheet() {
+    resetDate({ type: "生日", label: "", month: "", day: "", year: "" })
+    setDateError(null)
+    setDateSheetOpen(true)
+  }
+
+  async function onDateSubmit(data: DateValues) {
+    setDateError(null)
+    try {
+      const body: Record<string, unknown> = {
+        type: data.type,
+        month: parseInt(data.month),
+        day: parseInt(data.day),
+        remindDaysBefore: 3,
+      }
+      if (data.type === "自定义" && data.label) body.label = data.label
+      if (data.year) body.year = parseInt(data.year)
+
+      const res = await fetch(`/api/contacts/${id}/dates`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      })
+      if (!res.ok) {
+        setDateError("添加失败，请重试")
+        return
+      }
+      setDateSheetOpen(false)
+      await loadContact(new AbortController().signal)
+    } catch {
+      setDateError("添加失败，请重试")
+    }
+  }
+
   async function resolveNewTags(newTagNames: string[]): Promise<string[]> {
     const ids: string[] = []
     for (const name of newTagNames) {
