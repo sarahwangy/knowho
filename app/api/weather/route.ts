@@ -23,16 +23,19 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const res = await fetch(
-      `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=zh_cn`,
-      { next: { revalidate: 600 } }
-    )
+    const url = new URL("https://api.openweathermap.org/data/2.5/weather")
+    url.searchParams.set("lat", String(lat))
+    url.searchParams.set("lon", String(lon))
+    url.searchParams.set("appid", apiKey)
+    url.searchParams.set("units", "metric")
+    url.searchParams.set("lang", "zh_cn")
+    const res = await fetch(url.toString(), { next: { revalidate: 600 } })
     if (!res.ok) {
       return NextResponse.json({ error: "Weather fetch failed" }, { status: 502 })
     }
     const data = await res.json()
     return NextResponse.json({
-      temp: Math.round(data.main.temp),
+      temp: Math.round(data.main?.temp ?? 0),
       description: data.weather[0]?.description ?? "",
       icon: data.weather[0]?.icon ?? "",
       city: data.name ?? "",
