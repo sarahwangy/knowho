@@ -13,9 +13,10 @@ export async function GET() {
   const now = new Date()
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
 
+  const CUSTOM_DATE_TYPE = "自定义"
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
 
-  const [totalContacts, thisMonthInteractions] = await Promise.all([
+  const [totalContacts, thisMonthInteractions, allDates, contacts] = await Promise.all([
     prisma.contact.count({
       where: { userId, deletedAt: null },
     }),
@@ -25,12 +26,21 @@ export async function GET() {
         date: { gte: startOfMonth },
       },
     }),
+    prisma.importantDate.findMany({
+      where: { contact: { userId, deletedAt: null } },
+      include: { contact: { select: { id: true, name: true } } },
+    }),
+    prisma.contact.findMany({
+      where: { userId, deletedAt: null },
+      include: {
+        interactions: {
+          orderBy: { date: "desc" },
+          take: 1,
+          select: { date: true },
+        },
+      },
+    }),
   ])
-
-  const allDates = await prisma.importantDate.findMany({
-    where: { contact: { userId, deletedAt: null } },
-    include: { contact: { select: { id: true, name: true } } },
-  })
 
   const upcomingRaw: { contactId: string; contactName: string; type: string; daysUntil: number }[] = []
 
@@ -42,7 +52,7 @@ export async function GET() {
     }
     const daysUntil = Math.ceil((target.getTime() - today.getTime()) / 86400000)
     if (daysUntil <= 30) {
-      const type = d.type === "自定义" ? (d.label ?? "自定义") : d.type
+      const type = d.type === CUSTOM_DATE_TYPE ? (d.label ?? CUSTOM_DATE_TYPE) : d.type
       upcomingRaw.push({
         contactId: d.contact.id,
         contactName: d.contact.name,
@@ -55,17 +65,6 @@ export async function GET() {
   upcomingRaw.sort((a, b) => a.daysUntil - b.daysUntil)
   const upcomingDates = upcomingRaw.slice(0, 5)
   const upcomingDatesCount = upcomingRaw.length
-
-  const contacts = await prisma.contact.findMany({
-    where: { userId, deletedAt: null },
-    include: {
-      interactions: {
-        orderBy: { date: "desc" },
-        take: 1,
-        select: { date: true },
-      },
-    },
-  })
 
   const neglectedRaw: { id: string; name: string; daysSince: number | null }[] = []
 
