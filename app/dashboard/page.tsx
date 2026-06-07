@@ -107,7 +107,7 @@ export default function DashboardPage() {
         {/* Greeting */}
         <div>
           <h1 className="text-xl font-bold text-[#2d2926]">
-            {greeting()}，{data.userName.split(" ")[0]} 👋
+            {greeting()}，{data.userName.split(" ")[0] || "朋友"} 👋
           </h1>
           <p className="text-sm text-[#8b7d72] mt-0.5">共 {data.totalContacts} 位联系人</p>
         </div>
@@ -129,8 +129,8 @@ export default function DashboardPage() {
           <div className="bg-white rounded-xl p-4 shadow-sm">
             <p className="text-xs text-[#8b7d72] mb-3">即将到来</p>
             <ul className="space-y-3">
-              {data.upcomingDates.map((d, i) => (
-                <li key={i}>
+              {data.upcomingDates.map((d) => (
+                <li key={`${d.contactId}-${d.type}`}>
                   <Link
                     href={`/people/${d.contactId}`}
                     className="flex items-center gap-3"
@@ -159,7 +159,7 @@ export default function DashboardPage() {
                     className="flex items-center gap-3"
                   >
                     <div className="w-8 h-8 rounded-full bg-[#d4c9c0] flex items-center justify-center font-bold text-[#2d2926] text-sm shrink-0">
-                      {c.name.charAt(0)}
+                      {c.name.charAt(0) || "?"}
                     </div>
                     <span className="flex-1 text-sm text-[#2d2926]">{c.name}</span>
                     <span className="text-xs text-[#c0b8b0]">{daysSinceLabel(c.daysSince)}</span>
