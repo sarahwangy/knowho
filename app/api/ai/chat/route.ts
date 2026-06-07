@@ -14,14 +14,14 @@ export async function POST(request: NextRequest) {
   }
   const userId = session.user.id
 
-  let body: { messages: { role: "user" | "assistant"; content: string }[]; mode: string }
+  let body: { messages: { role: "user" | "assistant"; content: string }[]; mode: string; characterTone?: string }
   try {
     body = await request.json()
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 })
   }
 
-  const { messages, mode } = body
+  const { messages, mode, characterTone } = body
   if (!Array.isArray(messages) || messages.length === 0) {
     return NextResponse.json({ error: "messages required" }, { status: 400 })
   }
@@ -71,9 +71,10 @@ export async function POST(request: NextRequest) {
       })
       .join("\n")
 
+    const toneSuffix = typeof characterTone === "string" && characterTone ? `\n\n${characterTone}` : ""
     const systemPrompt = contacts.length > 0
-      ? `你是用户的私人关系助手，帮助他回忆和维护人际关系。用户的联系人如下：\n${contactSummary}\n\n请用中文简洁回答。`
-      : `你是用户的私人关系助手，用户目前还没有添加任何联系人。请用中文回答。`
+      ? `你是用户的私人关系助手，帮助他回忆和维护人际关系。用户的联系人如下：\n${contactSummary}\n\n请用中文简洁回答。${toneSuffix}`
+      : `你是用户的私人关系助手，用户目前还没有添加任何联系人。请用中文回答。${toneSuffix}`
 
     const response = await client.messages.create({
       model: "claude-haiku-4-5-20251001",
