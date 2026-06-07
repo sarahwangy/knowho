@@ -51,6 +51,7 @@ const editSchema = z.object({
   name: z.string().min(1, "姓名不能为空"),
   metAt: z.string().optional(),
   impression: z.string().optional(),
+  contactFreq: z.string().optional(),
 })
 
 type EditValues = z.infer<typeof editSchema>
@@ -167,6 +168,7 @@ export default function ContactProfilePage() {
       name: contact.name,
       metAt: contact.metAt ?? "",
       impression: contact.impression ?? "",
+      contactFreq: contact.contactFreq ?? "",
     })
     setEditTags(contact.tags.map((t) => ({ id: t.id, name: t.name })))
     setEditError(null)
@@ -273,6 +275,7 @@ export default function ContactProfilePage() {
           name: data.name,
           metAt: data.metAt || null,
           impression: data.impression || null,
+          contactFreq: data.contactFreq || null,
           tagIds,
         }),
       })
@@ -397,6 +400,9 @@ export default function ContactProfilePage() {
             <h1 className="text-xl font-bold text-[#2d2926]">{contact.name}</h1>
             {contact.metAt && (
               <p className="text-sm text-[#8b7d72] mt-0.5">{contact.metAt}</p>
+            )}
+            {contact.contactFreq && (
+              <p className="text-xs text-[#8b7d72] mt-0.5">🔁 {contact.contactFreq}联系</p>
             )}
           </div>
         </div>
@@ -561,6 +567,21 @@ export default function ContactProfilePage() {
                   rows={3}
                   {...register("impression")}
                 />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="edit-contactFreq" className="text-[#2d2926]">联系频率</Label>
+                <select
+                  id="edit-contactFreq"
+                  {...register("contactFreq")}
+                  className="w-full rounded-md border border-input px-3 py-2 text-sm text-[#2d2926] focus:outline-none focus:ring-2 focus:ring-[#2d2926]"
+                >
+                  <option value="">无</option>
+                  <option value="每周">每周</option>
+                  <option value="每两周">每两周</option>
+                  <option value="每月">每月</option>
+                  <option value="每季度">每季度</option>
+                </select>
               </div>
 
               <div className="space-y-1.5">
