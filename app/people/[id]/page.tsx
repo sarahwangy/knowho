@@ -12,6 +12,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { TagPicker, type SelectedTag } from "@/components/tag-picker"
+import { ContactAvatar } from "@/components/contact-avatar"
+import { AvatarPicker } from "@/components/avatar-picker"
 
 interface Tag {
   id: string
@@ -42,6 +44,7 @@ interface Contact {
   metAt: string | null
   impression: string | null
   contactFreq: string | null
+  avatar: string | null
   tags: Tag[]
   importantDates: ImportantDate[]
   interactions: Interaction[]
@@ -101,6 +104,7 @@ export default function ContactProfilePage() {
   const [deletingDateId, setDeletingDateId] = useState<string | null>(null)
   const [editOpen, setEditOpen] = useState(false)
   const [editTags, setEditTags] = useState<SelectedTag[]>([])
+  const [editAvatar, setEditAvatar] = useState<string | null>(null)
   const [editError, setEditError] = useState<string | null>(null)
   const [interactionSheetOpen, setInteractionSheetOpen] = useState(false)
   const [interactionError, setInteractionError] = useState<string | null>(null)
@@ -166,6 +170,7 @@ export default function ContactProfilePage() {
       contactFreq: contact.contactFreq ?? "",
     })
     setEditTags(contact.tags.map((t) => ({ id: t.id, name: t.name })))
+    setEditAvatar(contact.avatar ?? null)
     setEditError(null)
     setEditOpen(true)
   }
@@ -272,6 +277,7 @@ export default function ContactProfilePage() {
           impression: data.impression || null,
           contactFreq: data.contactFreq || null,
           tagIds,
+          avatar: editAvatar,
         }),
       })
 
@@ -388,9 +394,7 @@ export default function ContactProfilePage() {
       <div className="px-5 space-y-4">
         {/* Header */}
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-[#d4c9c0] flex items-center justify-center font-bold text-[#2d2926] text-2xl shrink-0">
-            {contact.name.charAt(0)}
-          </div>
+          <ContactAvatar name={contact.name} avatar={contact.avatar} size="md" />
           <div>
             <h1 className="text-xl font-bold text-[#2d2926]">{contact.name}</h1>
             {contact.metAt && (
@@ -544,6 +548,12 @@ export default function ContactProfilePage() {
                 {editError}
               </div>
             )}
+
+            <AvatarPicker
+              current={editAvatar}
+              name={contact.name}
+              onChange={setEditAvatar}
+            />
 
             <form onSubmit={handleSubmit(onEditSubmit)} className="space-y-4">
               <div className="space-y-1.5">

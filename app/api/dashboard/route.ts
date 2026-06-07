@@ -66,17 +66,17 @@ export async function GET() {
   const upcomingDates = upcomingRaw.slice(0, 5)
   const upcomingDatesCount = upcomingRaw.length
 
-  const neglectedRaw: { id: string; name: string; daysSince: number | null }[] = []
+  const neglectedRaw: { id: string; name: string; avatar: string | null; daysSince: number | null }[] = []
 
   for (const c of contacts) {
     const last = c.interactions[0]
     if (!last) {
-      neglectedRaw.push({ id: c.id, name: c.name, daysSince: null })
+      neglectedRaw.push({ id: c.id, name: c.name, avatar: c.avatar, daysSince: null })
     } else {
       const lastDate = new Date(last.date.getFullYear(), last.date.getMonth(), last.date.getDate())
       const daysSince = Math.floor((today.getTime() - lastDate.getTime()) / 86400000)
       if (daysSince > 30) {
-        neglectedRaw.push({ id: c.id, name: c.name, daysSince })
+        neglectedRaw.push({ id: c.id, name: c.name, avatar: c.avatar, daysSince })
       }
     }
   }

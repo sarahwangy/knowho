@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Download, Plus, Search } from "lucide-react"
+import { ContactAvatar } from "@/components/contact-avatar"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import {
@@ -30,6 +31,7 @@ interface Contact {
   id: string
   name: string
   metAt: string | null
+  avatar: string | null
   tags: Tag[]
   lastInteractionAt: string | null
 }
@@ -209,9 +211,7 @@ export default function PeoplePage() {
                 onClick={() => router.push(`/people/${contact.id}`)}
                 className="w-full flex items-center gap-3 p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow text-left"
               >
-                <div className="w-10 h-10 rounded-full bg-[#d4c9c0] flex items-center justify-center font-bold text-[#2d2926] text-base shrink-0">
-                  {getInitial(contact.name)}
-                </div>
+                <ContactAvatar name={contact.name} avatar={contact.avatar} size="sm" />
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-[#2d2926] text-sm">
                     {contact.name}

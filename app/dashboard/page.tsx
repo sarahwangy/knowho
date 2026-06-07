@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Plus } from "lucide-react"
 import Link from "next/link"
+import { ContactAvatar } from "@/components/contact-avatar"
 
 interface UpcomingDate {
   contactId: string
@@ -15,6 +16,7 @@ interface UpcomingDate {
 interface NeglectedContact {
   id: string
   name: string
+  avatar: string | null
   daysSince: number | null
 }
 
@@ -215,9 +217,7 @@ export default function DashboardPage() {
                     href={`/people/${c.id}`}
                     className="flex items-center gap-3"
                   >
-                    <div className="w-8 h-8 rounded-full bg-[#d4c9c0] flex items-center justify-center font-bold text-[#2d2926] text-sm shrink-0">
-                      {c.name.charAt(0) || "?"}
-                    </div>
+                    <ContactAvatar name={c.name} avatar={c.avatar} size="sm" />
                     <span className="flex-1 text-sm text-[#2d2926]">{c.name}</span>
                     <span className="text-xs text-[#c0b8b0]">{daysSinceLabel(c.daysSince)}</span>
                   </Link>
