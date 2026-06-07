@@ -20,7 +20,7 @@ export default async function RootLayout({
   const session = await auth()
   return (
     <html lang="zh">
-      <body className={`${geist.className} pb-16 md:pt-14 bg-[#7a9e6a]`}>
+      <body className={`${geist.className} pb-16 md:pt-14 bg-gradient-to-br from-[#b2d0a0] via-[#8ab87a] to-[#5a8a50] min-h-screen`}>
         <Nav />
         {session?.user && <AiAssistant />}
         <div className="max-w-2xl mx-auto w-full">
