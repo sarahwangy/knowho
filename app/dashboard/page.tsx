@@ -130,7 +130,7 @@ export default function DashboardPage() {
             <p className="text-xs text-[#8b7d72] mb-3">即将到来</p>
             <ul className="space-y-3">
               {data.upcomingDates.map((d) => (
-                <li key={`${d.contactId}-${d.type}`}>
+                <li key={`${d.contactId}-${d.type}-${d.daysUntil}`}>
                   <Link
                     href={`/people/${d.contactId}`}
                     className="flex items-center gap-3"
