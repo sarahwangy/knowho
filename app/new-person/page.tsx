@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { TagPicker, type SelectedTag } from "@/components/tag-picker"
-import { Mic } from "lucide-react"
+import { MicButton } from "@/components/mic-button"
 
 const schema = z.object({
   name: z.string().min(1, "姓名不能为空"),
@@ -29,6 +29,13 @@ export default function NewPersonPage() {
     return tagsParam.split(",").filter(Boolean).map((name) => ({ name }))
   })
   const [apiError, setApiError] = useState<string | null>(null)
+  const [voiceError, setVoiceError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!voiceError) return
+    const t = setTimeout(() => setVoiceError(null), 3000)
+    return () => clearTimeout(t)
+  }, [voiceError])
 
   const {
     register,
@@ -92,6 +99,12 @@ export default function NewPersonPage() {
           </div>
         )}
 
+        {voiceError && (
+          <div className="mb-4 rounded-lg bg-orange-50 border border-orange-200 px-4 py-3 text-sm text-orange-700">
+            {voiceError}
+          </div>
+        )}
+
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <div className="space-y-1.5">
             <Label htmlFor="name" className="text-[#2d2926]">
@@ -137,18 +150,13 @@ export default function NewPersonPage() {
             <TagPicker value={selectedTags} onChange={setSelectedTags} />
           </div>
 
-          <div className="flex items-center gap-2 text-[#8b7d72]">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              disabled
-              className="gap-1.5 text-[#8b7d72] border-[#d4c9c0]"
-            >
-              <Mic className="h-4 w-4" />
-              语音备注
-            </Button>
-            <span className="text-xs">即将推出</span>
+          <div className="flex items-center gap-2">
+            <MicButton
+              onTranscript={(text) => setValue("impression", text)}
+              onError={(msg) => setVoiceError(msg)}
+              className="flex items-center gap-1.5 rounded-md border border-[#d4c9c0] px-3 py-1.5 text-sm text-[#8b7d72] hover:text-[#3d6b2e] hover:border-[#3d6b2e]"
+            />
+            <span className="text-xs text-[#8b7d72]">语音备注</span>
           </div>
 
           <Button
