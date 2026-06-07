@@ -1,17 +1,13 @@
-// auth.ts
 import NextAuth from "next-auth"
-import Google from "next-auth/providers/google"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "@/lib/db"
+import { authConfig } from "@/auth.config"
 
 const PRESET_TAGS = ["读书会", "健身群", "邻居", "工作", "社群", "家人", "朋友", "其他"]
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  ...authConfig,
   adapter: PrismaAdapter(prisma),
-  providers: [Google],
-  pages: {
-    signIn: "/login",
-  },
   callbacks: {
     session({ session, user }) {
       if (!user?.id) throw new Error("User ID missing from database record")
