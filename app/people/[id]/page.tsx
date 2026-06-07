@@ -145,6 +145,32 @@ export default function ContactProfilePage() {
     setEditOpen(true)
   }
 
+  function openInteractionSheet() {
+    const today = new Date().toISOString().slice(0, 10)
+    resetInteraction({ content: "", date: today })
+    setInteractionError(null)
+    setInteractionSheetOpen(true)
+  }
+
+  async function onInteractionSubmit(data: InteractionValues) {
+    setInteractionError(null)
+    try {
+      const res = await fetch(`/api/contacts/${id}/interactions`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: data.content, date: data.date }),
+      })
+      if (!res.ok) {
+        setInteractionError("记录失败，请重试")
+        return
+      }
+      setInteractionSheetOpen(false)
+      await loadContact(new AbortController().signal)
+    } catch {
+      setInteractionError("记录失败，请重试")
+    }
+  }
+
   async function resolveNewTags(newTagNames: string[]): Promise<string[]> {
     const ids: string[] = []
     for (const name of newTagNames) {
