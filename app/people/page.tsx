@@ -6,6 +6,13 @@ import { useRouter } from "next/navigation"
 import { Plus, Search } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 interface Tag {
   id: string
@@ -18,6 +25,7 @@ interface Contact {
   name: string
   metAt: string | null
   tags: Tag[]
+  lastInteractionAt: string | null
 }
 
 export default function PeoplePage() {
@@ -28,6 +36,7 @@ export default function PeoplePage() {
   const [activeTagId, setActiveTagId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [sortBy, setSortBy] = useState<"name-asc" | "name-desc" | "interaction">("name-asc")
 
   useEffect(() => {
     Promise.all([
@@ -53,7 +62,16 @@ export default function PeoplePage() {
       .filter((c) =>
         activeTagId ? c.tags.some((t) => t.id === activeTagId) : true
       )
-  }, [contacts, searchQuery, activeTagId])
+      .sort((a, b) => {
+        if (sortBy === "name-asc") return a.name.localeCompare(b.name, "zh")
+        if (sortBy === "name-desc") return b.name.localeCompare(a.name, "zh")
+        // interaction: most recent first, null last
+        if (!a.lastInteractionAt && !b.lastInteractionAt) return 0
+        if (!a.lastInteractionAt) return 1
+        if (!b.lastInteractionAt) return -1
+        return new Date(b.lastInteractionAt).getTime() - new Date(a.lastInteractionAt).getTime()
+      })
+  }, [contacts, searchQuery, activeTagId, sortBy])
 
   function toggleTag(tagId: string) {
     setActiveTagId((prev) => (prev === tagId ? null : tagId))
@@ -67,14 +85,26 @@ export default function PeoplePage() {
     <main className="min-h-screen bg-[#f7f4f1] flex flex-col">
       {/* Search bar */}
       <div className="px-5 pt-6 pb-3">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#8b7d72]" />
-          <Input
-            placeholder="搜索联系人…"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 bg-white border-[#e8e0d8]"
-          />
+        <div className="flex gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#8b7d72]" />
+            <Input
+              placeholder="搜索联系人…"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9 bg-white border-[#e8e0d8]"
+            />
+          </div>
+          <Select value={sortBy} onValueChange={(v) => setSortBy(v as "name-asc" | "name-desc" | "interaction")}>
+            <SelectTrigger className="w-25 bg-white border-[#e8e0d8] shrink-0">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="name-asc">名字 A→Z</SelectItem>
+              <SelectItem value="name-desc">名字 Z→A</SelectItem>
+              <SelectItem value="interaction">最近互动</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
