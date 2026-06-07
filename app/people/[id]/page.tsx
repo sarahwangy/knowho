@@ -373,8 +373,8 @@ export default function ContactProfilePage() {
           )}
           <button
             type="button"
-            disabled
-            className="mt-3 flex items-center gap-1 text-xs text-[#c0b8b0] cursor-not-allowed"
+            onClick={openInteractionSheet}
+            className="mt-3 flex items-center gap-1 text-xs text-[#8b7d72] hover:text-[#2d2926]"
           >
             <Plus className="h-3 w-3" />
             记录一次
@@ -462,6 +462,70 @@ export default function ContactProfilePage() {
                 className="w-full bg-[#2d2926] text-white hover:bg-[#3d3533]"
               >
                 {isSubmitting ? "保存中…" : "保存"}
+              </Button>
+            </form>
+          </div>
+        </>
+      )}
+
+      {/* Interaction sheet */}
+      {interactionSheetOpen && (
+        <>
+          <div
+            className="fixed inset-0 bg-black/40 z-40"
+            onClick={() => setInteractionSheetOpen(false)}
+          />
+          <div className="fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-2xl px-5 pt-5 pb-10 max-h-[85vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-base font-semibold text-[#2d2926]">记录一次</h2>
+              <button
+                onClick={() => setInteractionSheetOpen(false)}
+                className="text-sm text-[#8b7d72]"
+              >
+                取消
+              </button>
+            </div>
+
+            {interactionError && (
+              <div className="mb-4 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+                {interactionError}
+              </div>
+            )}
+
+            <form onSubmit={handleInteractionSubmit(onInteractionSubmit)} className="space-y-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="interaction-content" className="text-[#2d2926]">内容</Label>
+                <Textarea
+                  id="interaction-content"
+                  rows={4}
+                  placeholder="聊了什么、发生了什么…"
+                  {...registerInteraction("content")}
+                  className={interactionErrors.content ? "border-red-400" : ""}
+                />
+                {interactionErrors.content && (
+                  <p className="text-xs text-red-500">{interactionErrors.content.message}</p>
+                )}
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="interaction-date" className="text-[#2d2926]">日期</Label>
+                <input
+                  id="interaction-date"
+                  type="date"
+                  {...registerInteraction("date")}
+                  className={`w-full rounded-md border px-3 py-2 text-sm text-[#2d2926] focus:outline-none focus:ring-2 focus:ring-[#2d2926] ${interactionErrors.date ? "border-red-400" : "border-input"}`}
+                />
+                {interactionErrors.date && (
+                  <p className="text-xs text-red-500">{interactionErrors.date.message}</p>
+                )}
+              </div>
+
+              <Button
+                type="submit"
+                disabled={isInteractionSubmitting}
+                className="w-full bg-[#2d2926] text-white hover:bg-[#3d3533]"
+              >
+                {isInteractionSubmitting ? "保存中…" : "记下来"}
               </Button>
             </form>
           </div>
