@@ -4,6 +4,7 @@ import Google from "next-auth/providers/google"
 export const authConfig = {
   providers: [Google],
   pages: { signIn: "/login" },
+  session: { strategy: "jwt" as const },
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user

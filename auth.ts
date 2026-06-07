@@ -9,9 +9,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authConfig,
   adapter: PrismaAdapter(prisma),
   callbacks: {
-    session({ session, user }) {
-      if (!user?.id) throw new Error("User ID missing from database record")
-      session.user.id = user.id
+    jwt({ token, user }) {
+      if (user?.id) token.sub = user.id
+      return token
+    },
+    session({ session, token }) {
+      if (token.sub) session.user.id = token.sub
       return session
     },
     async signIn({ user, account }) {
