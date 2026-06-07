@@ -127,10 +127,10 @@ export default function PeoplePage() {
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => { window.location.href = "/api/export?format=json" }}>
+              <DropdownMenuItem onClick={() => (window.location.href = "/api/export?format=json")}>
                 导出 JSON
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => { window.location.href = "/api/export?format=csv" }}>
+              <DropdownMenuItem onClick={() => (window.location.href = "/api/export?format=csv")}>
                 导出 CSV
               </DropdownMenuItem>
             </DropdownMenuContent>
