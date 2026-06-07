@@ -208,12 +208,12 @@ export default function ContactProfilePage() {
     try {
       const body: Record<string, unknown> = {
         type: data.type,
-        month: parseInt(data.month),
-        day: parseInt(data.day),
+        month: parseInt(data.month, 10),
+        day: parseInt(data.day, 10),
         remindDaysBefore: 3,
       }
       if (data.type === "自定义" && data.label) body.label = data.label
-      if (data.year) body.year = parseInt(data.year)
+      if (data.year) body.year = parseInt(data.year, 10)
 
       const res = await fetch(`/api/contacts/${id}/dates`, {
         method: "POST",
