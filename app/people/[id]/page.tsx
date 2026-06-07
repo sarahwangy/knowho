@@ -448,7 +448,7 @@ export default function ContactProfilePage() {
                   <button
                     type="button"
                     onClick={() => handleDeleteInteraction(i.id)}
-                    disabled={deletingInteractionId === i.id}
+                    disabled={deletingInteractionId !== null}
                     title="删除互动记录"
                     className="shrink-0 mt-0.5 text-[#c0b8b0] hover:text-red-400 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
