@@ -29,6 +29,9 @@ interface Contact {
 }
 
 export default function PeoplePage() {
+  const SORT_OPTIONS = ["name-asc", "name-desc", "interaction"] as const
+  type SortBy = typeof SORT_OPTIONS[number]
+
   const router = useRouter()
   const [contacts, setContacts] = useState<Contact[]>([])
   const [tags, setTags] = useState<Tag[]>([])
@@ -36,7 +39,7 @@ export default function PeoplePage() {
   const [activeTagId, setActiveTagId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [sortBy, setSortBy] = useState<"name-asc" | "name-desc" | "interaction">("name-asc")
+  const [sortBy, setSortBy] = useState<SortBy>("name-asc")
 
   useEffect(() => {
     Promise.all([
@@ -95,8 +98,10 @@ export default function PeoplePage() {
               className="pl-9 bg-white border-[#e8e0d8]"
             />
           </div>
-          <Select value={sortBy} onValueChange={(v) => setSortBy(v as "name-asc" | "name-desc" | "interaction")}>
-            <SelectTrigger className="w-25 bg-white border-[#e8e0d8] shrink-0">
+          <Select value={sortBy} onValueChange={(v) => {
+            if ((SORT_OPTIONS as readonly string[]).includes(v)) setSortBy(v as SortBy)
+          }}>
+            <SelectTrigger className="w-[6.5rem] bg-white border-[#e8e0d8] shrink-0">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
