@@ -55,6 +55,13 @@ const editSchema = z.object({
 
 type EditValues = z.infer<typeof editSchema>
 
+const interactionSchema = z.object({
+  content: z.string().min(1, "内容不能为空"),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "请选择有效日期"),
+})
+
+type InteractionValues = z.infer<typeof interactionSchema>
+
 function dateEmoji(type: string) {
   if (type === "生日") return "🎂"
   if (type === "纪念日") return "🗓️"
@@ -83,6 +90,8 @@ export default function ContactProfilePage() {
   const [editOpen, setEditOpen] = useState(false)
   const [editTags, setEditTags] = useState<SelectedTag[]>([])
   const [editError, setEditError] = useState<string | null>(null)
+  const [interactionSheetOpen, setInteractionSheetOpen] = useState(false)
+  const [interactionError, setInteractionError] = useState<string | null>(null)
 
   const {
     register,
@@ -90,6 +99,13 @@ export default function ContactProfilePage() {
     reset,
     formState: { errors, isSubmitting },
   } = useForm<EditValues>({ resolver: zodResolver(editSchema) })
+
+  const {
+    register: registerInteraction,
+    handleSubmit: handleInteractionSubmit,
+    reset: resetInteraction,
+    formState: { errors: interactionErrors, isSubmitting: isInteractionSubmitting },
+  } = useForm<InteractionValues>({ resolver: zodResolver(interactionSchema) })
 
   async function loadContact(signal?: AbortSignal) {
     setLoading(true)
