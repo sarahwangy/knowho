@@ -62,6 +62,20 @@ const interactionSchema = z.object({
 
 type InteractionValues = z.infer<typeof interactionSchema>
 
+const dateSchema = z.object({
+  type: z.enum(["生日", "纪念日", "自定义"]),
+  label: z.string().optional(),
+  month: z.string().min(1, "请选择月份"),
+  day: z.string().min(1, "请选择日期"),
+  year: z.string().optional(),
+}).superRefine((val, ctx) => {
+  if (val.type === "自定义" && !val.label?.trim()) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, message: "请填写标签", path: ["label"] })
+  }
+})
+
+type DateValues = z.infer<typeof dateSchema>
+
 function dateEmoji(type: string) {
   if (type === "生日") return "🎂"
   if (type === "纪念日") return "🗓️"
@@ -92,6 +106,8 @@ export default function ContactProfilePage() {
   const [editError, setEditError] = useState<string | null>(null)
   const [interactionSheetOpen, setInteractionSheetOpen] = useState(false)
   const [interactionError, setInteractionError] = useState<string | null>(null)
+  const [dateSheetOpen, setDateSheetOpen] = useState(false)
+  const [dateError, setDateError] = useState<string | null>(null)
 
   const {
     register,
@@ -106,6 +122,16 @@ export default function ContactProfilePage() {
     reset: resetInteraction,
     formState: { errors: interactionErrors, isSubmitting: isInteractionSubmitting },
   } = useForm<InteractionValues>({ resolver: zodResolver(interactionSchema) })
+
+  const {
+    register: registerDate,
+    handleSubmit: handleDateSubmit,
+    reset: resetDate,
+    watch: watchDate,
+    formState: { errors: dateErrors, isSubmitting: isDateSubmitting },
+  } = useForm<DateValues>({ resolver: zodResolver(dateSchema) })
+
+  const watchedDateType = watchDate("type")
 
   async function loadContact(signal?: AbortSignal) {
     setLoading(true)
