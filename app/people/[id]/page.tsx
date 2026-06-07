@@ -406,8 +406,8 @@ export default function ContactProfilePage() {
           )}
           <button
             type="button"
-            disabled
-            className="mt-3 flex items-center gap-1 text-xs text-[#c0b8b0] cursor-not-allowed"
+            onClick={openDateSheet}
+            className="mt-3 flex items-center gap-1 text-xs text-[#8b7d72] hover:text-[#2d2926]"
           >
             <Plus className="h-3 w-3" />
             添加日期
@@ -586,6 +586,118 @@ export default function ContactProfilePage() {
                 className="w-full bg-[#2d2926] text-white hover:bg-[#3d3533]"
               >
                 {isInteractionSubmitting ? "保存中…" : "记下来"}
+              </Button>
+            </form>
+          </div>
+        </>
+      )}
+
+      {/* Date sheet */}
+      {dateSheetOpen && (
+        <>
+          <div
+            className="fixed inset-0 bg-black/40 z-40"
+            onClick={() => setDateSheetOpen(false)}
+          />
+          <div className="fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-2xl px-5 pt-5 pb-10 max-h-[85vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-base font-semibold text-[#2d2926]">添加日期</h2>
+              <button
+                onClick={() => setDateSheetOpen(false)}
+                className="text-sm text-[#8b7d72]"
+              >
+                取消
+              </button>
+            </div>
+
+            {dateError && (
+              <div className="mb-4 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+                {dateError}
+              </div>
+            )}
+
+            <form onSubmit={handleDateSubmit(onDateSubmit)} className="space-y-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="date-type" className="text-[#2d2926]">类型</Label>
+                <select
+                  id="date-type"
+                  {...registerDate("type")}
+                  className="w-full rounded-md border border-input px-3 py-2 text-sm text-[#2d2926] focus:outline-none focus:ring-2 focus:ring-[#2d2926]"
+                >
+                  <option value="生日">生日</option>
+                  <option value="纪念日">纪念日</option>
+                  <option value="自定义">自定义</option>
+                </select>
+              </div>
+
+              {watchedDateType === "自定义" && (
+                <div className="space-y-1.5">
+                  <Label htmlFor="date-label" className="text-[#2d2926]">标签</Label>
+                  <Input
+                    id="date-label"
+                    placeholder="如：相识纪念日"
+                    {...registerDate("label")}
+                    className={dateErrors.label ? "border-red-400" : ""}
+                  />
+                  {dateErrors.label && (
+                    <p className="text-xs text-red-500">{dateErrors.label.message}</p>
+                  )}
+                </div>
+              )}
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label htmlFor="date-month" className="text-[#2d2926]">月</Label>
+                  <select
+                    id="date-month"
+                    {...registerDate("month")}
+                    className={`w-full rounded-md border px-3 py-2 text-sm text-[#2d2926] focus:outline-none focus:ring-2 focus:ring-[#2d2926] ${dateErrors.month ? "border-red-400" : "border-input"}`}
+                  >
+                    <option value="">请选择</option>
+                    {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
+                      <option key={m} value={String(m)}>{m}月</option>
+                    ))}
+                  </select>
+                  {dateErrors.month && (
+                    <p className="text-xs text-red-500">{dateErrors.month.message}</p>
+                  )}
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="date-day" className="text-[#2d2926]">日</Label>
+                  <select
+                    id="date-day"
+                    {...registerDate("day")}
+                    className={`w-full rounded-md border px-3 py-2 text-sm text-[#2d2926] focus:outline-none focus:ring-2 focus:ring-[#2d2926] ${dateErrors.day ? "border-red-400" : "border-input"}`}
+                  >
+                    <option value="">请选择</option>
+                    {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => (
+                      <option key={d} value={String(d)}>{d}日</option>
+                    ))}
+                  </select>
+                  {dateErrors.day && (
+                    <p className="text-xs text-red-500">{dateErrors.day.message}</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="date-year" className="text-[#2d2926]">年份（可选）</Label>
+                <input
+                  id="date-year"
+                  type="number"
+                  placeholder="如：1990"
+                  {...registerDate("year")}
+                  className="w-full rounded-md border border-input px-3 py-2 text-sm text-[#2d2926] focus:outline-none focus:ring-2 focus:ring-[#2d2926]"
+                />
+              </div>
+
+              <Button
+                type="submit"
+                disabled={isDateSubmitting}
+                className="w-full bg-[#2d2926] text-white hover:bg-[#3d3533]"
+              >
+                {isDateSubmitting ? "添加中…" : "添加"}
               </Button>
             </form>
           </div>
