@@ -592,7 +592,7 @@ export default function ContactProfilePage() {
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full bg-[#2d2926] text-white hover:bg-[#3d3533]"
+                className="w-full bg-[#7a9e6a] text-white hover:bg-[#6a8f5a]"
               >
                 {isSubmitting ? "保存中…" : "保存"}
               </Button>
@@ -656,7 +656,7 @@ export default function ContactProfilePage() {
               <Button
                 type="submit"
                 disabled={isInteractionSubmitting}
-                className="w-full bg-[#2d2926] text-white hover:bg-[#3d3533]"
+                className="w-full bg-[#7a9e6a] text-white hover:bg-[#6a8f5a]"
               >
                 {isInteractionSubmitting ? "保存中…" : "记下来"}
               </Button>
@@ -768,7 +768,7 @@ export default function ContactProfilePage() {
               <Button
                 type="submit"
                 disabled={isDateSubmitting}
-                className="w-full bg-[#2d2926] text-white hover:bg-[#3d3533]"
+                className="w-full bg-[#7a9e6a] text-white hover:bg-[#6a8f5a]"
               >
                 {isDateSubmitting ? "添加中…" : "添加"}
               </Button>

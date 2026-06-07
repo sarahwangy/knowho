@@ -143,7 +143,7 @@ export default function NewPersonPage() {
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-[#2d2926] text-white hover:bg-[#3d3533]"
+            className="w-full bg-[#7a9e6a] text-white hover:bg-[#6a8f5a]"
           >
             {isSubmitting ? "保存中…" : "记下来"}
           </Button>

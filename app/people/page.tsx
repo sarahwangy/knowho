@@ -191,7 +191,7 @@ export default function PeoplePage() {
                 </p>
                 <Link
                   href="/new-person"
-                  className="rounded-full bg-[#2d2926] px-5 py-2.5 text-sm font-medium text-white hover:bg-[#3d3533]"
+                  className="rounded-full bg-[#7a9e6a] px-5 py-2.5 text-sm font-medium text-white hover:bg-[#6a8f5a]"
                 >
                   去记第一个人
                 </Link>
@@ -249,7 +249,7 @@ export default function PeoplePage() {
       {/* FAB */}
       <Link
         href="/new-person"
-        className="fixed bottom-6 right-6 flex items-center gap-2 rounded-full bg-[#2d2926] px-4 py-3 text-sm font-medium text-white shadow-lg hover:bg-[#3d3533]"
+        className="fixed bottom-6 right-6 flex items-center gap-2 rounded-full bg-[#7a9e6a] px-4 py-3 text-sm font-medium text-white shadow-lg hover:bg-[#6a8f5a]"
       >
         <Plus className="h-4 w-4" />
         认识新朋友了？

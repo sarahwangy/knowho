@@ -182,7 +182,7 @@ export default function DashboardPage() {
       {/* FAB */}
       <button
         onClick={() => router.push("/new-person")}
-        className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-[#2d2926] text-white shadow-lg flex items-center justify-center hover:bg-[#3d3533] transition-colors"
+        className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-[#7a9e6a] text-white shadow-lg flex items-center justify-center hover:bg-[#6a8f5a] transition-colors"
         aria-label="添加联系人"
       >
         <Plus className="h-6 w-6" />
