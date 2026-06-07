@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Plus, Search } from "lucide-react"
+import { Download, Plus, Search } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import {
@@ -13,6 +13,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 interface Tag {
   id: string
@@ -110,6 +116,25 @@ export default function PeoplePage() {
               <SelectItem value="interaction">最近互动</SelectItem>
             </SelectContent>
           </Select>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                className="flex h-10 w-10 items-center justify-center rounded-md border border-[#e8e0d8] bg-white text-[#8b7d72] hover:text-[#2d2926] shrink-0"
+                aria-label="导出数据"
+              >
+                <Download className="h-4 w-4" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => { window.location.href = "/api/export?format=json" }}>
+                导出 JSON
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => { window.location.href = "/api/export?format=csv" }}>
+                导出 CSV
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
