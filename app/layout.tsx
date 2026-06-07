@@ -1,7 +1,7 @@
-// app/layout.tsx
 import type { Metadata } from "next"
 import { Geist } from "next/font/google"
 import "./globals.css"
+import { Nav } from "@/components/nav"
 
 const geist = Geist({ subsets: ["latin"] })
 
@@ -17,7 +17,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="zh">
-      <body className={geist.className}>{children}</body>
+      <body className={`${geist.className} pb-16 md:pt-14`}>
+        <Nav />
+        {children}
+      </body>
     </html>
   )
 }
