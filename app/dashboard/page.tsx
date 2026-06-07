@@ -78,7 +78,7 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#f7f4f1] p-5">
+      <main className="min-h-screen p-5">
         <div className="animate-pulse space-y-4">
           <div className="h-7 w-40 bg-[#e8e0d8] rounded" />
           <div className="h-4 w-24 bg-[#e8e0d8] rounded" />
@@ -95,14 +95,14 @@ export default function DashboardPage() {
 
   if (error || !data) {
     return (
-      <main className="min-h-screen bg-[#f7f4f1] p-5">
+      <main className="min-h-screen p-5">
         <p className="text-red-500 text-sm">{error ?? "加载失败"}</p>
       </main>
     )
   }
 
   return (
-    <main className="min-h-screen bg-[#f7f4f1] flex flex-col pb-24">
+    <main className="min-h-screen flex flex-col pb-24">
       <div className="px-5 pt-8 pb-4 space-y-4">
         {/* Greeting */}
         <div>
@@ -182,7 +182,7 @@ export default function DashboardPage() {
       {/* FAB */}
       <button
         onClick={() => router.push("/new-person")}
-        className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-[#7a9e6a] text-white shadow-lg flex items-center justify-center hover:bg-[#6a8f5a] transition-colors"
+        className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-[#3d6b2e] text-white shadow-lg flex items-center justify-center hover:bg-[#2d5520] transition-colors"
         aria-label="添加联系人"
       >
         <Plus className="h-6 w-6" />

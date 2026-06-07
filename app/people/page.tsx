@@ -91,7 +91,7 @@ export default function PeoplePage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f7f4f1] flex flex-col">
+    <main className="min-h-screen flex flex-col">
       {/* Search bar */}
       <div className="px-5 pt-6 pb-3">
         <div className="flex gap-2">
@@ -191,7 +191,7 @@ export default function PeoplePage() {
                 </p>
                 <Link
                   href="/new-person"
-                  className="rounded-full bg-[#7a9e6a] px-5 py-2.5 text-sm font-medium text-white hover:bg-[#6a8f5a]"
+                  className="rounded-full bg-[#3d6b2e] px-5 py-2.5 text-sm font-medium text-white hover:bg-[#2d5520]"
                 >
                   去记第一个人
                 </Link>
@@ -249,7 +249,7 @@ export default function PeoplePage() {
       {/* FAB */}
       <Link
         href="/new-person"
-        className="fixed bottom-6 right-6 flex items-center gap-2 rounded-full bg-[#7a9e6a] px-4 py-3 text-sm font-medium text-white shadow-lg hover:bg-[#6a8f5a]"
+        className="fixed bottom-6 right-6 flex items-center gap-2 rounded-full bg-[#3d6b2e] px-4 py-3 text-sm font-medium text-white shadow-lg hover:bg-[#2d5520]"
       >
         <Plus className="h-4 w-4" />
         认识新朋友了？

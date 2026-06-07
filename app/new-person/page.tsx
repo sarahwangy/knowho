@@ -69,7 +69,7 @@ export default function NewPersonPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f7f4f1] flex flex-col">
+    <main className="min-h-screen flex flex-col">
       <div className="flex-1 px-5 pt-8 pb-6 max-w-md mx-auto w-full">
         <h1 className="text-xl font-semibold text-[#2d2926] mb-6">
           认识新朋友了？
@@ -143,7 +143,7 @@ export default function NewPersonPage() {
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-[#7a9e6a] text-white hover:bg-[#6a8f5a]"
+            className="w-full bg-[#3d6b2e] text-white hover:bg-[#2d5520]"
           >
             {isSubmitting ? "保存中…" : "记下来"}
           </Button>

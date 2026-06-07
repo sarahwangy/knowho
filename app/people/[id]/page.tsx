@@ -339,7 +339,7 @@ export default function ContactProfilePage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#f7f4f1] p-5">
+      <main className="min-h-screen p-5">
         <div className="animate-pulse space-y-4">
           <div className="h-6 w-16 bg-[#e8e0d8] rounded" />
           <div className="flex items-center gap-3">
@@ -358,7 +358,7 @@ export default function ContactProfilePage() {
 
   if (error || !contact) {
     return (
-      <main className="min-h-screen bg-[#f7f4f1] p-5">
+      <main className="min-h-screen p-5">
         <button
           onClick={() => router.push("/people")}
           className="flex items-center gap-1 text-[#8b7d72] mb-6"
@@ -372,7 +372,7 @@ export default function ContactProfilePage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f7f4f1] flex flex-col pb-20">
+    <main className="min-h-screen flex flex-col pb-20">
       {/* Nav */}
       <div className="flex items-center justify-between px-5 pt-6 pb-4">
         <button
@@ -592,7 +592,7 @@ export default function ContactProfilePage() {
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full bg-[#7a9e6a] text-white hover:bg-[#6a8f5a]"
+                className="w-full bg-[#3d6b2e] text-white hover:bg-[#2d5520]"
               >
                 {isSubmitting ? "保存中…" : "保存"}
               </Button>
@@ -656,7 +656,7 @@ export default function ContactProfilePage() {
               <Button
                 type="submit"
                 disabled={isInteractionSubmitting}
-                className="w-full bg-[#7a9e6a] text-white hover:bg-[#6a8f5a]"
+                className="w-full bg-[#3d6b2e] text-white hover:bg-[#2d5520]"
               >
                 {isInteractionSubmitting ? "保存中…" : "记下来"}
               </Button>
@@ -768,7 +768,7 @@ export default function ContactProfilePage() {
               <Button
                 type="submit"
                 disabled={isDateSubmitting}
-                className="w-full bg-[#7a9e6a] text-white hover:bg-[#6a8f5a]"
+                className="w-full bg-[#3d6b2e] text-white hover:bg-[#2d5520]"
               >
                 {isDateSubmitting ? "添加中…" : "添加"}
               </Button>

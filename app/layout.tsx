@@ -17,9 +17,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="zh">
-      <body className={`${geist.className} pb-16 md:pt-14`}>
+      <body className={`${geist.className} pb-16 md:pt-14 bg-[#7a9e6a]`}>
         <Nav />
-        {children}
+        <div className="max-w-2xl mx-auto w-full">
+          {children}
+        </div>
       </body>
     </html>
   )
