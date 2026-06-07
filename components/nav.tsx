@@ -2,11 +2,12 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Home, Users } from "lucide-react"
+import { Home, Users, Calendar } from "lucide-react"
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "首页", icon: Home },
   { href: "/people", label: "联系人", icon: Users },
+  { href: "/calendar", label: "日历", icon: Calendar },
 ]
 
 export function Nav() {
