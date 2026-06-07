@@ -26,10 +26,21 @@ export async function GET(request: Request) {
     orderBy: { createdAt: "desc" },
     include: {
       tags: { select: { id: true, name: true, isPreset: true } },
+      interactions: {
+        orderBy: { date: "desc" },
+        take: 1,
+        select: { date: true },
+      },
     },
   })
 
-  return NextResponse.json(contacts)
+  return NextResponse.json(
+    contacts.map((c) => ({
+      ...c,
+      lastInteractionAt: c.interactions[0]?.date.toISOString() ?? null,
+      interactions: undefined,
+    }))
+  )
 }
 
 const createContactSchema = z.object({
