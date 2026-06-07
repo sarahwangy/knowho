@@ -102,6 +102,7 @@ export default function ContactProfilePage() {
   const [error, setError] = useState<string | null>(null)
   const [deleting, setDeleting] = useState(false)
   const [deletingInteractionId, setDeletingInteractionId] = useState<string | null>(null)
+  const [deletingDateId, setDeletingDateId] = useState<string | null>(null)
   const [editOpen, setEditOpen] = useState(false)
   const [editTags, setEditTags] = useState<SelectedTag[]>([])
   const [editError, setEditError] = useState<string | null>(null)
@@ -318,6 +319,21 @@ export default function ContactProfilePage() {
     }
   }
 
+  async function handleDeleteDate(dateId: string) {
+    if (!window.confirm("确定删除这个日期？")) return
+    setDeletingDateId(dateId)
+    try {
+      const res = await fetch(`/api/contacts/${id}/dates/${dateId}`, { method: "DELETE" })
+      if (res.ok) {
+        await loadContact(new AbortController().signal)
+      } else {
+        setError("删除失败，请重试")
+      }
+    } finally {
+      setDeletingDateId(null)
+    }
+  }
+
   if (loading) {
     return (
       <main className="min-h-screen bg-[#f7f4f1] p-5">
@@ -414,8 +430,17 @@ export default function ContactProfilePage() {
           ) : (
             <ul className="space-y-2">
               {contact.importantDates.map((d) => (
-                <li key={d.id} className="text-sm text-[#2d2926]">
-                  {formatDate(d)}
+                <li key={d.id} className="flex items-center justify-between gap-2">
+                  <span className="text-sm text-[#2d2926] flex-1 min-w-0">{formatDate(d)}</span>
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteDate(d.id)}
+                    disabled={deletingDateId !== null}
+                    title="删除日期"
+                    className="shrink-0 text-[#c0b8b0] hover:text-red-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
                 </li>
               ))}
             </ul>
