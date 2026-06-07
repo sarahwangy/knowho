@@ -3,6 +3,7 @@
 import { useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Sparkles, X, Send } from "lucide-react"
+import { MicButton } from "@/components/mic-button"
 
 interface Message {
   role: "user" | "assistant"
@@ -52,6 +53,10 @@ export function AiAssistant() {
     } finally {
       setSending(false)
     }
+  }
+
+  function handleChatTranscript(text: string) {
+    setInput((prev) => (prev ? prev + " " + text : text))
   }
 
   async function parseRecord() {
@@ -181,6 +186,12 @@ export function AiAssistant() {
                     disabled={sending}
                     className="flex-1 rounded-full border border-[#e8e0d8] px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3d6b2e] disabled:opacity-50"
                   />
+                  <MicButton
+                    onTranscript={handleChatTranscript}
+                    onError={(msg) => setChatError(msg)}
+                    disabled={sending}
+                    className="w-9 h-9 rounded-full border border-[#e8e0d8] bg-white text-[#8b7d72] hover:text-[#3d6b2e]"
+                  />
                   <button
                     onClick={sendMessage}
                     disabled={sending || !input.trim()}
@@ -202,6 +213,14 @@ export function AiAssistant() {
                   rows={4}
                   className="w-full rounded-xl border border-[#e8e0d8] px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#3d6b2e] resize-none"
                 />
+                <div className="flex justify-end">
+                  <MicButton
+                    onTranscript={(text) => setRecordInput((prev) => prev ? prev + " " + text : text)}
+                    onError={(msg) => setRecordError(msg)}
+                    disabled={parsing}
+                    className="text-[#8b7d72] hover:text-[#3d6b2e]"
+                  />
+                </div>
                 {recordError && (
                   <p className="text-xs text-red-500">{recordError}</p>
                 )}
