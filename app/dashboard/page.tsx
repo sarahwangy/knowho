@@ -18,6 +18,12 @@ interface NeglectedContact {
   daysSince: number | null
 }
 
+interface WeatherData {
+  temp: number
+  icon: string
+  city: string
+}
+
 interface DashboardData {
   userName: string
   totalContacts: number
@@ -25,6 +31,15 @@ interface DashboardData {
   upcomingDatesCount: number
   upcomingDates: UpcomingDate[]
   neglectedContacts: NeglectedContact[]
+}
+
+function weatherEmoji(icon: string) {
+  const code = icon.slice(0, 2)
+  const map: Record<string, string> = {
+    "01": "☀️", "02": "⛅", "03": "☁️", "04": "☁️",
+    "09": "🌧️", "10": "🌧️", "11": "⛈️", "13": "🌨️", "50": "🌫️",
+  }
+  return map[code] ?? "🌡️"
 }
 
 function greeting() {
@@ -56,6 +71,7 @@ export default function DashboardPage() {
   const [data, setData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [weather, setWeather] = useState<WeatherData | null>(null)
 
   useEffect(() => {
     const controller = new AbortController()
@@ -74,6 +90,20 @@ export default function DashboardPage() {
         setLoading(false)
       })
     return () => controller.abort()
+  }, [])
+
+  useEffect(() => {
+    if (!navigator.geolocation) return
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude: lat, longitude: lon } = pos.coords
+        fetch(`/api/weather?lat=${lat}&lon=${lon}`)
+          .then((r) => (r.ok ? r.json() : null))
+          .then((d) => { if (d) setWeather(d) })
+          .catch(() => {})
+      },
+      () => {}
+    )
   }, [])
 
   if (loading) {
@@ -105,11 +135,21 @@ export default function DashboardPage() {
     <main className="min-h-screen flex flex-col pb-24">
       <div className="px-5 pt-8 pb-4 space-y-4">
         {/* Greeting */}
-        <div>
-          <h1 className="text-xl font-bold text-[#2d2926]">
-            {greeting()}，{data.userName.split(" ")[0] || "朋友"} 👋
-          </h1>
-          <p className="text-sm text-[#8b7d72] mt-0.5">共 {data.totalContacts} 位联系人</p>
+        <div className="flex items-start justify-between gap-2">
+          <div>
+            <h1 className="text-xl font-bold text-white">
+              {greeting()}，{data.userName.split(" ")[0] || "朋友"} 👋
+            </h1>
+            <p className="text-sm text-white/70 mt-0.5">共 {data.totalContacts} 位联系人</p>
+          </div>
+          {weather && (
+            <div className="text-right shrink-0">
+              <p className="text-sm text-white">
+                {weatherEmoji(weather.icon)} {weather.temp}°
+              </p>
+              <p className="text-xs text-white/70">{weather.city}</p>
+            </div>
+          )}
         </div>
 
         {/* Stats */}
