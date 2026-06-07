@@ -42,6 +42,14 @@ function weatherEmoji(icon: string) {
   return map[code] ?? "🌡️"
 }
 
+function weatherAnimation(icon: string): string {
+  const code = icon.slice(0, 2)
+  if (code === "01") return "animate-[weather-sun-pulse_2s_ease-in-out_infinite]"
+  if (["02", "03", "04", "50"].includes(code)) return "animate-[weather-float_3s_ease-in-out_infinite]"
+  if (["09", "10", "11"].includes(code)) return "animate-[weather-rain-drip_1.5s_ease-in-out_infinite]"
+  return ""
+}
+
 function greeting() {
   const h = new Date().getHours()
   if (h < 12) return "早上好"
@@ -144,24 +152,33 @@ export default function DashboardPage() {
           </div>
           {weather && (
             <div className="text-right shrink-0">
-              <p className="text-sm text-white">
-                {weatherEmoji(weather.icon)} {weather.temp}°
+              <p className="text-2xl text-white font-light flex items-center gap-1 justify-end">
+                <span className={`inline-block ${weatherAnimation(weather.icon)}`}>{weatherEmoji(weather.icon)}</span>
+                <span>{weather.temp}°</span>
               </p>
-              <p className="text-xs text-white/70">{weather.city}</p>
+              <p className="text-xs text-white/80 mt-0.5">{weather.city}</p>
             </div>
           )}
         </div>
 
         {/* Stats */}
         <div className="grid grid-cols-2 gap-3">
-          <div className="bg-white rounded-xl p-4 shadow-sm">
-            <p className="text-xs text-[#8b7d72] mb-1">本月互动</p>
-            <p className="text-2xl font-bold text-[#2d2926]">{data.thisMonthInteractions}</p>
-          </div>
-          <div className="bg-white rounded-xl p-4 shadow-sm">
-            <p className="text-xs text-[#8b7d72] mb-1">近期日期</p>
-            <p className="text-2xl font-bold text-[#2d2926]">{data.upcomingDatesCount}</p>
-          </div>
+          <button
+            type="button"
+            onClick={() => router.push("/people")}
+            className="bg-white rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow text-left w-full cursor-pointer"
+          >
+            <p className="text-sm text-[#8b7d72]">本月互动</p>
+            <p className="text-3xl font-bold text-[#2d2926] mt-1">{data.thisMonthInteractions}</p>
+          </button>
+          <button
+            type="button"
+            onClick={() => router.push("/calendar")}
+            className="bg-white rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow text-left w-full cursor-pointer"
+          >
+            <p className="text-sm text-[#8b7d72]">近期日期</p>
+            <p className="text-3xl font-bold text-[#2d2926] mt-1">{data.upcomingDatesCount}</p>
+          </button>
         </div>
 
         {/* Upcoming dates — only render if non-empty */}
