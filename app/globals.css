@@ -149,3 +149,49 @@
   0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(4px); }
 }
+
+/* Sound wave bars animation */
+@keyframes sound-bar-1 {
+  0%, 100% { height: 6px; }
+  50% { height: 20px; }
+}
+@keyframes sound-bar-2 {
+  0%, 100% { height: 10px; }
+  50% { height: 28px; }
+}
+@keyframes sound-bar-3 {
+  0%, 100% { height: 16px; }
+  50% { height: 36px; }
+}
+@keyframes sound-bar-4 {
+  0%, 100% { height: 10px; }
+  50% { height: 28px; }
+}
+@keyframes sound-bar-5 {
+  0%, 100% { height: 6px; }
+  50% { height: 20px; }
+}
+
+.sound-bar {
+  height: 6px;
+}
+.sound-bar-1 {
+  animation: sound-bar-1 0.48s ease-in-out infinite;
+  animation-delay: 0s;
+}
+.sound-bar-2 {
+  animation: sound-bar-2 0.56s ease-in-out infinite;
+  animation-delay: 0.1s;
+}
+.sound-bar-3 {
+  animation: sound-bar-3 0.64s ease-in-out infinite;
+  animation-delay: 0.2s;
+}
+.sound-bar-4 {
+  animation: sound-bar-4 0.72s ease-in-out infinite;
+  animation-delay: 0.3s;
+}
+.sound-bar-5 {
+  animation: sound-bar-5 0.8s ease-in-out infinite;
+  animation-delay: 0.4s;
+}

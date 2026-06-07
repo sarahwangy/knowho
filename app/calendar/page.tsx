@@ -1,8 +1,8 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { ChevronLeft, ChevronRight, Mic } from "lucide-react"
 
 interface CalendarDate {
   contactId: string
@@ -46,6 +46,10 @@ export default function CalendarPage() {
   const [addEventYear, setAddEventYear] = useState("")
   const [addEventError, setAddEventError] = useState<string | null>(null)
   const [addEventSaving, setAddEventSaving] = useState(false)
+  const [calVoiceRecording, setCalVoiceRecording] = useState(false)
+  const [calVoiceProcessing, setCalVoiceProcessing] = useState(false)
+  const [voiceText, setVoiceText] = useState("")
+  const calRecorderRef = useRef<MediaRecorder | null>(null)
 
   useEffect(() => {
     setLoading(true)
@@ -152,6 +156,43 @@ export default function CalendarPage() {
       setAddEventError("保存失败，请重试")
     } finally {
       setAddEventSaving(false)
+    }
+  }
+
+  async function startCalVoice() {
+    if (calVoiceProcessing) return
+    if (calVoiceRecording) {
+      calRecorderRef.current?.stop()
+      return
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      const mimeType = MediaRecorder.isTypeSupported("audio/webm") ? "audio/webm" : "audio/mp4"
+      const recorder = new MediaRecorder(stream, { mimeType })
+      const chunks: Blob[] = []
+      recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data) }
+      recorder.onstop = async () => {
+        stream.getTracks().forEach((t) => t.stop())
+        setCalVoiceRecording(false)
+        setCalVoiceProcessing(true)
+        const blob = new Blob(chunks, { type: mimeType })
+        const formData = new FormData()
+        formData.append("audio", blob, "recording.webm")
+        try {
+          const res = await fetch("/api/voice/transcribe", { method: "POST", body: formData })
+          const data = res.ok ? await res.json() : null
+          if (data?.text) setVoiceText(data.text)
+        } catch {}
+        setCalVoiceProcessing(false)
+      }
+      recorder.start()
+      calRecorderRef.current = recorder
+      setCalVoiceRecording(true)
+      setTimeout(() => {
+        if (calRecorderRef.current?.state === "recording") calRecorderRef.current.stop()
+      }, 60000)
+    } catch {
+      // microphone denied, silently ignore
     }
   }
 
@@ -389,6 +430,67 @@ export default function CalendarPage() {
           </div>
         </>
       )}
+
+      {/* Voice input section */}
+      <div className="px-4 pb-28 mt-8 flex flex-col items-center gap-4">
+        <p className="text-white/60 text-xs tracking-wide">语音添加事件</p>
+
+        <div className="relative flex flex-col items-center gap-3">
+          {/* Sound wave — shown when recording */}
+          {calVoiceRecording && (
+            <div className="flex items-end gap-1 h-10">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div
+                  key={i}
+                  className={`w-2 bg-white rounded-full sound-bar sound-bar-${i}`}
+                />
+              ))}
+            </div>
+          )}
+
+          {!calVoiceRecording && !calVoiceProcessing && (
+            <div className="h-10" />
+          )}
+
+          {calVoiceProcessing && (
+            <div className="h-10 flex items-center">
+              <p className="text-white/60 text-xs animate-pulse">转换中…</p>
+            </div>
+          )}
+
+          {/* Large mic button */}
+          <button
+            type="button"
+            onClick={startCalVoice}
+            disabled={calVoiceProcessing}
+            className={`w-16 h-16 rounded-full flex items-center justify-center shadow-lg transition-colors disabled:opacity-50 ${
+              calVoiceRecording
+                ? "bg-red-500 hover:bg-red-600"
+                : "bg-white hover:bg-white/90"
+            }`}
+            aria-label={calVoiceRecording ? "点击停止录音" : "开始语音输入"}
+          >
+            <Mic className={`h-7 w-7 ${calVoiceRecording ? "text-white" : "text-[#3d6b2e]"}`} />
+          </button>
+
+          {calVoiceRecording && (
+            <p className="text-white/50 text-xs">再次点击停止</p>
+          )}
+        </div>
+
+        {voiceText && (
+          <div className="w-full max-w-sm mt-2">
+            <textarea
+              value={voiceText}
+              onChange={(e) => setVoiceText(e.target.value)}
+              rows={3}
+              className="w-full rounded-xl bg-white/20 border border-white/30 text-white placeholder-white/40 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-white/50 resize-none"
+              placeholder="语音转文字结果…"
+            />
+            <p className="text-white/40 text-xs mt-1 text-center">可编辑</p>
+          </div>
+        )}
+      </div>
     </main>
   )
 }
