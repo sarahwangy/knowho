@@ -44,3 +44,5 @@ next-env.d.ts
 .superpowers/
 .claude/
 .vscode/
+
+/lib/generated/prisma
