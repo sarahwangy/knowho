@@ -2,7 +2,6 @@
 
 **Personal AI contact manager — remember the people who matter.**
 
-🔗 **Live Demo**: [knowho.vercel.app](https://knowho.vercel.app)\
 📝 **Read the Story**: [Medium](https://medium.com/@sarahwang9)\
 🇨🇳 **中文文档**: [README_CN.md](./README_CN.md)
 
