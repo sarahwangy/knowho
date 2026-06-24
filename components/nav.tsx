@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Bot, Calendar, Home, Users } from "lucide-react"
+import { signOut } from "next-auth/react"
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "首页", icon: Home },
@@ -13,6 +14,8 @@ const NAV_ITEMS = [
 
 export function Nav() {
   const pathname = usePathname()
+
+  if (pathname === "/login") return null
 
   return (
     <>
@@ -54,6 +57,14 @@ export function Nav() {
             </Link>
           )
         })}
+        <div className="ml-auto">
+          <button
+            onClick={() => signOut({ callbackUrl: "/login" })}
+            className="text-sm text-[#8b7d72] hover:text-[#3d6b2e] px-3 py-1 rounded-md transition-colors"
+          >
+            退出
+          </button>
+        </div>
       </nav>
     </>
   )

@@ -1,6 +1,7 @@
 "use client"
 
 import { useRef, useState } from "react"
+import ReactMarkdown from "react-markdown"
 import { useRouter } from "next/navigation"
 import { Sparkles, X, Send } from "lucide-react"
 import { MicButton } from "@/components/mic-button"
@@ -161,7 +162,13 @@ export function AiAssistant() {
                             : "bg-[#f0f0f0] text-[#2d2926]"
                         }`}
                       >
-                        {m.content}
+                        {m.role === "user" ? (
+                          m.content
+                        ) : (
+                          <div className="prose prose-sm max-w-none prose-p:my-1 prose-ul:my-1 prose-li:my-0 prose-headings:my-1">
+                            <ReactMarkdown>{m.content}</ReactMarkdown>
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}
