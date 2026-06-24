@@ -72,8 +72,8 @@ export async function POST(request: NextRequest) {
 
     const toneSuffix = typeof characterTone === "string" && characterTone ? `\n\n${characterTone}` : ""
     const systemPrompt = contacts.length > 0
-      ? `你是用户的私人关系助手，帮助他回忆和维护人际关系。用户的联系人如下：\n${contactSummary}\n\n请用中文简洁回答。${toneSuffix}`
-      : `你是用户的私人关系助手，用户目前还没有添加任何联系人。请用中文回答。${toneSuffix}`
+      ? `你是用户的私人关系助手，帮助他回忆和维护人际关系。用户的联系人如下：\n${contactSummary}\n\n请用中文简洁回答。不要使用 markdown 格式（不要用 ** 加粗、不要用 - 列表），直接用自然语言表达。如果需要列举多人，每人单独一行。${toneSuffix}`
+      : `你是用户的私人关系助手，用户目前还没有添加任何联系人。请用中文回答。不要使用 markdown 格式，直接用自然语言表达。${toneSuffix}`
 
     const response = await client.messages.create({
       model: "claude-haiku-4-5-20251001",
