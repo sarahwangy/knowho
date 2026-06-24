@@ -165,9 +165,18 @@ export function AiAssistant() {
                         {m.role === "user" ? (
                           m.content
                         ) : (
-                          <div className="prose prose-sm max-w-none prose-p:my-1 prose-ul:my-1 prose-li:my-0 prose-headings:my-1">
-                            <ReactMarkdown>{m.content}</ReactMarkdown>
-                          </div>
+                          <ReactMarkdown
+                            components={{
+                              p: ({ children }) => <p className="mb-1 last:mb-0">{children}</p>,
+                              strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+                              ul: ({ children }) => <ul className="list-disc pl-4 mb-1 space-y-0.5">{children}</ul>,
+                              ol: ({ children }) => <ol className="list-decimal pl-4 mb-1 space-y-0.5">{children}</ol>,
+                              li: ({ children }) => <li className="text-sm">{children}</li>,
+                              h1: ({ children }) => <h1 className="font-bold text-base mb-1">{children}</h1>,
+                              h2: ({ children }) => <h2 className="font-bold text-sm mb-1">{children}</h2>,
+                              h3: ({ children }) => <h3 className="font-semibold text-sm mb-0.5">{children}</h3>,
+                            }}
+                          >{m.content}</ReactMarkdown>
                         )}
                       </div>
                     </div>
