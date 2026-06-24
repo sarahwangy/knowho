@@ -19,11 +19,35 @@
       "Bash(cat /tmp/nextdev.log)",
       "Read(//private/tmp/**)",
       "Bash(git init *)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git ls-tree *)",
+      "Bash(grep \"^.*\\\\.tsx\\\\|^.*\\\\.ts$\")",
+      "Bash(npm uninstall *)",
+      "Bash(node -e \"const p = require\\('./package.json'\\); console.log\\('deps:', Object.keys\\(p.dependencies || {}\\)\\); console.log\\('devdeps:', Object.keys\\(p.devDependencies || {}\\)\\)\")",
+      "Bash(node -e \"const p = require\\('/Users/sha/Code/AI-code-26/konwho/package.json'\\); console.log\\('deps:', JSON.stringify\\(p.dependencies, null, 2\\)\\)\")",
+      "Bash(git commit *)",
+      "Bash(docker run *)",
+      "Bash(pg_isready -h localhost -p 5432)",
+      "Bash(brew services *)",
+      "Bash(brew list *)",
+      "Read(//usr/local/bin/**)",
+      "Bash(npx prisma *)",
+      "Bash(brew install *)",
+      "Bash(/opt/homebrew/opt/postgresql@18/bin/pg_isready)",
+      "Bash(git -C /Users/sha/Code/AI-code-26/konwho add prisma/ lib/db.ts)",
+      "Bash(git -C /Users/sha/Code/AI-code-26/konwho commit -m ' *)",
+      "Bash(bash /tmp/check_relations.sh)",
+      "Bash(awk '/^model Contact/,/^}/' /Users/sha/Code/AI-code-26/konwho/prisma/schema.prisma)",
+      "Bash(mkdir -p /Users/sha/Code/AI-code-26/konwho/types && mkdir -p /Users/sha/Code/AI-code-26/konwho/app/api/auth/\\\\[...nextauth\\\\])",
+      "Bash(curl -s http://localhost:3000/api/auth/providers)",
+      "Bash(openssl rand *)",
+      "Bash(npx tsc *)"
     ],
     "additionalDirectories": [
       "/Users/sha/Code/AI-code-26/konwho-scaffold",
-      "/tmp"
+      "/tmp",
+      "/Users/sha/Code/AI-code-26/konwho/app/api/auth"
     ]
   }
 }
