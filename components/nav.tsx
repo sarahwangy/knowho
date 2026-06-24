@@ -62,7 +62,7 @@ export function Nav() {
             onClick={() => signOut({ callbackUrl: "/login" })}
             className="text-sm text-[#8b7d72] hover:text-[#3d6b2e] px-3 py-1 rounded-md transition-colors"
           >
-            退出
+            Logout
           </button>
         </div>
       </nav>
