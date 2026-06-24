@@ -1,10 +1,60 @@
 "use client"
 
-import { useRef, useState } from "react"
-import ReactMarkdown from "react-markdown"
+import { useRef, useState, Fragment } from "react"
 import { useRouter } from "next/navigation"
 import { Sparkles, X, Send } from "lucide-react"
 import { MicButton } from "@/components/mic-button"
+
+function renderInline(text: string) {
+  return text.split(/(\*\*[^*]+\*\*)/g).map((part, pi) => {
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return <strong key={pi} className="font-semibold">{part.slice(2, -2)}</strong>
+    }
+    return <Fragment key={pi}>{part}</Fragment>
+  })
+}
+
+function renderMarkdown(text: string) {
+  const lines = text.split("\n")
+  const nodes: React.ReactNode[] = []
+  let bulletBuffer: string[] = []
+  let key = 0
+
+  function flushBullets() {
+    if (bulletBuffer.length === 0) return
+    nodes.push(
+      <ul key={key++} className="list-disc list-outside pl-4 my-1 space-y-0.5">
+        {bulletBuffer.map((item, i) => (
+          <li key={i} className="text-sm leading-relaxed">{renderInline(item)}</li>
+        ))}
+      </ul>
+    )
+    bulletBuffer = []
+  }
+
+  for (const line of lines) {
+    if (/^[-─]{3,}$/.test(line.trim())) {
+      flushBullets(); nodes.push(<hr key={key++} className="my-2 border-[#d1d5db]" />); continue
+    }
+    const h2 = line.match(/^##\s+(.+)/)
+    if (h2) { flushBullets(); nodes.push(<p key={key++} className="text-sm font-bold mt-2 mb-0.5">{h2[1]}</p>); continue }
+    const h3 = line.match(/^###\s+(.+)/)
+    if (h3) { flushBullets(); nodes.push(<p key={key++} className="text-sm font-semibold mt-1.5 mb-0.5">{h3[1]}</p>); continue }
+    const numbered = line.match(/^(\d+)\.\s+(.+)/)
+    if (numbered) {
+      flushBullets()
+      nodes.push(<p key={key++} className="text-sm font-semibold mt-2 mb-0.5">{numbered[1]}. {renderInline(numbered[2])}</p>)
+      continue
+    }
+    const bullet = line.match(/^[-*]\s+(.+)/)
+    if (bullet) { bulletBuffer.push(bullet[1]); continue }
+    if (!line.trim()) { flushBullets(); nodes.push(<br key={key++} />); continue }
+    flushBullets()
+    nodes.push(<span key={key++} className="block text-sm leading-relaxed">{renderInline(line)}</span>)
+  }
+  flushBullets()
+  return nodes
+}
 
 interface Message {
   role: "user" | "assistant"
@@ -162,22 +212,7 @@ export function AiAssistant() {
                             : "bg-[#f0f0f0] text-[#2d2926]"
                         }`}
                       >
-                        {m.role === "user" ? (
-                          m.content
-                        ) : (
-                          <ReactMarkdown
-                            components={{
-                              p: ({ children }) => <p className="mb-1 last:mb-0">{children}</p>,
-                              strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
-                              ul: ({ children }) => <ul className="list-disc pl-4 mb-1 space-y-0.5">{children}</ul>,
-                              ol: ({ children }) => <ol className="list-decimal pl-4 mb-1 space-y-0.5">{children}</ol>,
-                              li: ({ children }) => <li className="text-sm">{children}</li>,
-                              h1: ({ children }) => <h1 className="font-bold text-base mb-1">{children}</h1>,
-                              h2: ({ children }) => <h2 className="font-bold text-sm mb-1">{children}</h2>,
-                              h3: ({ children }) => <h3 className="font-semibold text-sm mb-0.5">{children}</h3>,
-                            }}
-                          >{m.content}</ReactMarkdown>
-                        )}
+                        {m.role === "user" ? m.content : renderMarkdown(m.content)}
                       </div>
                     </div>
                   ))}
