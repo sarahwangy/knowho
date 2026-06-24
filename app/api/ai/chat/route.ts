@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
     })
 
     const contactSummary = contacts
-      .map((c) => {
+      .map((c: typeof contacts[number]) => {
         const tags = c.tags.map((t) => t.name).join("、")
         const last = c.interactions[0]?.date.toISOString().slice(0, 10) ?? "从未"
         return `- ${c.name}（认识于：${c.metAt ?? "未知"}；印象：${c.impression ?? "无"}；标签：${tags || "无"}；最近互动：${last}）`
