@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Knowho — Biennale Yellow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Archivo:wght@400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ── Stage ── */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;overflow:hidden;background:#c8c2b0;}
+.deck-viewport{position:fixed;inset:0;overflow:hidden;}
+.deck-stage{position:absolute;left:0;top:0;width:1920px;height:1080px;overflow:hidden;transform-origin:0 0;}
+.slide{
+  position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden;
+  visibility:hidden;opacity:0;pointer-events:none;
+  transition:opacity .28s ease;
+}
+.slide.active{visibility:visible;opacity:1;pointer-events:auto;z-index:1;}
+@media (prefers-reduced-motion:reduce){.slide{transition-duration:.01ms!important;}}
+@media print{
+  html,body{width:1920px;height:auto;overflow:visible;}
+  .deck-viewport{position:static;overflow:visible;}
+  .deck-stage{position:static;width:auto;height:auto;transform:none!important;}
+  .slide{position:relative;display:block!important;visibility:visible!important;
+         opacity:1!important;pointer-events:auto!important;width:1920px;height:1080px;break-after:page;}
+}
+
+/* ── Biennale Yellow palette ── */
+:root{
+  --paper:      #E9E5DB;
+  --paper-deep: #DCD6C4;
+  --sun:        #F1EE2E;
+  --sun-soft:   #F8F39B;
+  --haze:       #F0DA7C;
+  --ink:        #1B2566;
+  --ember:      #E26B4A;
+
+  --ff-serif: 'Instrument Serif', Georgia, serif;
+  --ff-sans:  'Archivo', sans-serif;
+  --ff-mono:  'JetBrains Mono', ui-monospace, monospace;
+
+  /* Fixed-stage sizes translated from clamp/vw/vh at 1920×1080 */
+  --t-display:    240px;
+  --t-display-md: 192px;
+  --t-display-sm: 200px;
+  --t-display-it: 120px;
+  --t-jumbo:      520px;
+  --t-numeral-lg: 280px;
+  --t-numeral-md: 134px;
+  --t-headline:    88px;
+  --t-headline-sm: 56px;
+  --t-date-rail:   96px;
+  --t-strand-title: 32px;
+  --t-strand-num:   38px;
+  --t-ledger-title: 30px;
+  --t-body-lede:    18px;
+  --t-body:         16px;
+  --t-body-sm:      13px;
+  --t-micro:        14px;
+  --t-micro-tight:  12px;
+  --t-rail:         13px;
+  --t-mono-data:    14px;
+  --t-mono-date:    16px;
+  --t-pagenum:      13px;
+
+  --pad-edge:   76px;
+  --pad-region: 80px;
+  --gap-region: 48px;
+  --gap-strand: 20px;
+}
+
+/* ── Typography helpers ── */
+.t-display    { font-family:var(--ff-serif);font-size:var(--t-display);   font-weight:400;line-height:.86;letter-spacing:-.018em; }
+.t-display-md { font-family:var(--ff-serif);font-size:var(--t-display-md);font-weight:400;line-height:.86;letter-spacing:-.018em; }
+.t-display-it { font-family:var(--ff-serif);font-size:var(--t-display-it);font-weight:400;font-style:italic;line-height:1.04;letter-spacing:-.005em; }
+.t-jumbo      { font-family:var(--ff-serif);font-size:var(--t-jumbo);     font-weight:400;line-height:.84;letter-spacing:-.04em; }
+.t-numeral-lg { font-family:var(--ff-serif);font-size:var(--t-numeral-lg);font-weight:400;line-height:.9; letter-spacing:-.04em; }
+.t-numeral-md { font-family:var(--ff-serif);font-size:var(--t-numeral-md);font-weight:400;line-height:.92;letter-spacing:-.01em; }
+.t-headline   { font-family:var(--ff-serif);font-size:var(--t-headline);  font-weight:400;line-height:1.06;letter-spacing:-.005em; }
+.t-headline-sm{ font-family:var(--ff-serif);font-size:var(--t-headline-sm);font-weight:400;line-height:1.0; }
+.t-strand-num { font-family:var(--ff-serif);font-size:var(--t-strand-num);font-weight:400;line-height:1; }
+.t-strand-title{font-family:var(--ff-serif);font-size:var(--t-strand-title);font-weight:400;line-height:1.1; }
+.t-ledger-title{font-family:var(--ff-serif);font-size:var(--t-ledger-title);font-weight:400;line-height:1.15; }
+.t-body-lede  { font-family:var(--ff-sans); font-size:var(--t-body-lede); font-weight:400;line-height:1.55; }
+.t-body       { font-family:var(--ff-sans); font-size:var(--t-body);      font-weight:400;line-height:1.5; }
+.t-body-sm    { font-family:var(--ff-sans); font-size:var(--t-body-sm);   font-weight:400;line-height:1.5; }
+.t-micro      { font-family:var(--ff-sans); font-size:var(--t-micro);     font-weight:600;letter-spacing:.18em;text-transform:uppercase;line-height:1.2; }
+.t-micro-tight{ font-family:var(--ff-sans); font-size:var(--t-micro-tight);font-weight:600;letter-spacing:.16em;text-transform:uppercase;line-height:1.2; }
+.t-mono-data  { font-family:var(--ff-mono); font-size:var(--t-mono-data); font-weight:400;letter-spacing:.04em; }
+.t-mono-date  { font-family:var(--ff-mono); font-size:var(--t-mono-date); font-weight:400;letter-spacing:.02em; }
+.t-pagenum    { font-family:var(--ff-mono); font-size:var(--t-pagenum);   font-weight:400;letter-spacing:.08em; }
+
+/* All text is ink */
+.slide { color: var(--ink); }
+
+/* ── Persistent pagenum ── */
+.pn {
+  position:absolute;right:48px;bottom:28px;
+  font-family:var(--ff-mono);font-size:var(--t-pagenum);
+  font-weight:400;letter-spacing:.08em;color:var(--ink);opacity:.75;
+}
+
+/* ── Sun bloom ── */
+.bloom-sun {
+  position:absolute;pointer-events:none;
+}
+.bloom-ember {
+  position:absolute;pointer-events:none;
+}
+
+/* ── Hairline rules ── */
+.rule      { width:100%;height:1px;background:var(--ink); }
+.rule-soft { width:100%;height:1px;background:rgba(27,37,102,.18); }
+.rule-v    { width:1px;height:100%;background:var(--ink); }
+
+/* ── Yellow panel ── */
+.yellow-panel { background:var(--sun);color:var(--ink); }
+
+/* ── Strand row ── */
+.strand-row {
+  display:grid;grid-template-columns:56px 1fr;gap:24px;
+  padding-bottom:var(--gap-strand);
+  border-bottom:1px solid rgba(27,37,102,.18);
+}
+.strand-row:last-child { border-bottom:none;padding-bottom:0; }
+
+/* ── Ledger row ── */
+.ledger-row {
+  display:grid;grid-template-columns:160px 1.6fr 1fr 80px;gap:24px;
+  padding:14px 0;
+  border-bottom:1px solid rgba(27,37,102,.18);
+  align-items:baseline;
+}
+.ledger-row:last-child { border-bottom:none; }
+
+/* ── Footer band ── */
+.footer-band {
+  display:grid;grid-template-columns:repeat(4,1fr);gap:44px;
+}
+.footer-cell {
+  border-top:1px solid var(--ink);
+  padding-top:14px;
+}
+
+/* ── Bar chart ── */
+.bar-track { height:22px;background:transparent;display:flex;align-items:center; }
+.bar-ink   { height:22px;background:var(--ink);display:block; }
+.bar-lit   { height:22px;background:var(--sun);border:1px solid var(--ink);display:block; }
+
+/* ── Nav dots ── */
+.nav-dots{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;gap:8px;}
+.nav-dot{width:8px;height:8px;border-radius:0;border:1px solid var(--ink);background:transparent;cursor:pointer;transition:background .2s;opacity:.5;}
+.nav-dot.on{background:var(--ink);opacity:1;}
+</style>
+</head>
+<body>
+<div class="deck-viewport">
+<main class="deck-stage" id="stage">
+
+
+<!-- ════════════════════════════════
+     SLIDE 01 — COVER
+     ════════════════════════════════ -->
+<section class="slide active" id="s1" style="background:var(--paper);padding:var(--pad-edge);">
+
+  <!-- Block-tile underprint -->
+  <div style="position:absolute;inset:0;pointer-events:none;overflow:hidden;">
+    <div style="position:absolute;width:280px;height:200px;background:rgba(241,238,46,.55);top:0;right:320px;"></div>
+    <div style="position:absolute;width:180px;height:320px;background:rgba(241,238,46,.4);top:200px;right:320px;"></div>
+    <div style="position:absolute;width:280px;height:180px;background:rgba(241,238,46,.35);top:0;right:0;"></div>
+    <div style="position:absolute;width:180px;height:160px;background:rgba(241,238,46,.25);bottom:120px;right:320px;"></div>
+    <div style="position:absolute;width:280px;height:220px;background:rgba(241,238,46,.45);bottom:0;right:0;"></div>
+  </div>
+
+  <!-- Sun bloom -->
+  <div class="bloom-sun" style="top:-120px;right:80px;width:820px;height:820px;background:radial-gradient(ellipse 820px 820px at 60% 40%,rgba(241,238,46,.9) 0%,rgba(241,238,46,.55) 35%,rgba(240,218,124,.2) 60%,transparent 80%);"></div>
+  <!-- Ember bloom -->
+  <div class="bloom-ember" style="bottom:-80px;left:-60px;width:480px;height:420px;background:radial-gradient(ellipse 480px 420px at 30% 70%,rgba(226,107,74,.18) 0%,transparent 70%);"></div>
+
+  <!-- Main content -->
+  <div style="position:relative;z-index:1;height:100%;display:flex;flex-direction:column;justify-content:space-between;">
+
+    <!-- Header rule + eyebrow -->
+    <div>
+      <div class="rule" style="margin-bottom:20px;"></div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;">
+        <div class="t-micro" style="color:var(--ink);">Personal AI Contact Manager</div>
+        <div class="t-mono-date" style="color:var(--ink);">2026</div>
+      </div>
+    </div>
+
+    <!-- Display title -->
+    <div>
+      <div class="t-display" style="margin-bottom:24px;">Knowho</div>
+      <div class="t-display-it" style="max-width:880px;margin-bottom:36px;">
+        remember the people who matter.
+      </div>
+      <div class="t-body-lede" style="max-width:720px;">
+        A private contact manager that surfaces the right context at the right time — so you can be a better friend, colleague, and collaborator.
+      </div>
+    </div>
+
+    <!-- Footer band -->
+    <div>
+      <div class="rule" style="margin-bottom:24px;"></div>
+      <div class="footer-band">
+        <div class="footer-cell">
+          <div class="t-micro-tight" style="margin-bottom:8px;">Framework</div>
+          <div class="t-body-sm">Next.js + TypeScript</div>
+        </div>
+        <div class="footer-cell">
+          <div class="t-micro-tight" style="margin-bottom:8px;">AI</div>
+          <div class="t-body-sm">Claude Haiku — Anthropic</div>
+        </div>
+        <div class="footer-cell">
+          <div class="t-micro-tight" style="margin-bottom:8px;">Data</div>
+          <div class="t-body-sm">Prisma + Vercel Postgres</div>
+        </div>
+        <div class="footer-cell">
+          <div class="t-micro-tight" style="margin-bottom:8px;">Deploy</div>
+          <div class="t-body-sm">Vercel · NextAuth v5</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pn">01 / 10</div>
+</section>
+
+
+<!-- ════════════════════════════════
+     SLIDE 02 — CHAPTER 01: THE PROBLEM
+     ════════════════════════════════ -->
+<section class="slide" id="s2" style="background:var(--paper);overflow:hidden;">
+
+  <!-- Sun bloom top-right -->
+  <div class="bloom-sun" style="top:-200px;right:-100px;width:700px;height:700px;background:radial-gradient(ellipse 700px 700px at 70% 30%,rgba(241,238,46,.85) 0%,rgba(241,238,46,.5) 35%,rgba(240,218,124,.18) 60%,transparent 80%);"></div>
+
+  <!-- Yellow panel right third -->
+  <div class="yellow-panel" style="position:absolute;right:0;top:0;width:560px;height:100%;display:flex;flex-direction:column;justify-content:center;padding:var(--pad-edge);">
+    <div class="t-micro" style="margin-bottom:32px;color:var(--ink);">Chapter 01</div>
+    <div class="t-headline" style="color:var(--ink);">The Problem<br>with People</div>
+    <div style="margin-top:32px;width:40px;height:1px;background:var(--ink);"></div>
+  </div>
+
+  <!-- Left: jumbo numeral -->
+  <div style="position:absolute;left:0;top:0;width:1360px;height:100%;display:flex;align-items:flex-end;padding:var(--pad-edge);">
+    <div>
+      <!-- Vertical rail label -->
+      <div class="t-micro" style="writing-mode:vertical-rl;transform:rotate(180deg);letter-spacing:.32em;position:absolute;left:76px;top:50%;transform:translateX(-50%) rotate(180deg);opacity:.6;">The Problem</div>
+      <div class="t-jumbo" style="color:var(--ink);line-height:.84;margin-left:60px;">1</div>
+    </div>
+  </div>
+
+  <div class="pn" style="color:var(--ink);">02 / 10</div>
+</section>
+
+
+<!-- ════════════════════════════════
+     SLIDE 03 — THE PROBLEM (stats)
+     ════════════════════════════════ -->
+<section class="slide" id="s3" style="background:var(--paper);padding:var(--pad-edge);">
+
+  <!-- Sun bloom off-center left -->
+  <div class="bloom-sun" style="top:100px;left:-100px;width:680px;height:680px;background:radial-gradient(ellipse 680px 680px at 30% 50%,rgba(241,238,46,.8) 0%,rgba(241,238,46,.45) 35%,rgba(240,218,124,.15) 60%,transparent 80%);"></div>
+  <div class="bloom-ember" style="bottom:-60px;right:-60px;width:420px;height:380px;background:radial-gradient(ellipse 420px 380px at 70% 70%,rgba(226,107,74,.16) 0%,transparent 70%);"></div>
+
+  <div style="position:relative;z-index:1;height:100%;display:flex;flex-direction:column;justify-content:space-between;">
+
+    <div>
+      <div class="rule" style="margin-bottom:20px;"></div>
+      <div class="t-micro" style="margin-bottom:32px;">§ 01 — The Problem</div>
+      <div class="t-headline" style="max-width:900px;">We forget more than we remember.</div>
+      <div class="t-body-lede" style="max-width:760px;margin-top:20px;">Corporate CRMs are built for sales funnels, not friendships. There's no quiet tool for remembering what your mentor told you last Tuesday, or that your colleague's daughter just started university.</div>
+    </div>
+
+    <!-- 3 stats in a row -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0 60px;margin-top:auto;">
+
+      <div>
+        <div class="rule" style="margin-bottom:20px;"></div>
+        <div class="t-numeral-md" style="color:var(--ink);margin-bottom:12px;">147</div>
+        <div class="t-strand-title" style="margin-bottom:8px;">avg. contacts</div>
+        <div class="t-body" style="opacity:.7;">per professional — most remembered only as a name in a list.</div>
+      </div>
+
+      <div>
+        <div class="rule" style="margin-bottom:20px;"></div>
+        <div class="t-numeral-md" style="color:var(--ink);margin-bottom:12px;">3 days</div>
+        <div class="t-strand-title" style="margin-bottom:8px;">before you forget</div>
+        <div class="t-body" style="opacity:.7;">what you discussed with someone after a meeting or coffee catch-up.</div>
+      </div>
+
+      <div>
+        <div class="rule" style="margin-bottom:20px;"></div>
+        <div class="t-numeral-md" style="color:var(--ink);margin-bottom:12px;">0</div>
+        <div class="t-strand-title" style="margin-bottom:8px;">tools designed for this</div>
+        <div class="t-body" style="opacity:.7;">No product exists for the quiet, personal side of relationship memory.</div>
+      </div>
+
+    </div>
+
+    <div class="rule" style="margin-top:32px;"></div>
+  </div>
+
+  <div class="pn">03 / 10</div>
+</section>
+
+
+<!-- ════════════════════════════════
+     SLIDE 04 — FEATURES OVERVIEW  (yellow panel left)
+     ════════════════════════════════ -->
+<section class="slide" id="s4" style="background:var(--paper);display:grid;grid-template-columns:480px 1fr;">
+
+  <!-- Left: yellow panel -->
+  <div class="yellow-panel" style="padding:var(--pad-edge);display:flex;flex-direction:column;justify-content:space-between;">
+    <div>
+      <div class="rule" style="margin-bottom:20px;background:var(--ink);"></div>
+      <div class="t-micro" style="color:var(--ink);margin-bottom:40px;">§ 02 — Features</div>
+      <div class="t-headline-sm" style="color:var(--ink);">Six ways Knowho keeps you present.</div>
+    </div>
+    <div class="t-body" style="color:var(--ink);opacity:.8;">Every feature designed for one purpose: showing up for people with the right context at the right moment.</div>
+  </div>
+
+  <!-- Right: strand list -->
+  <div style="padding:var(--pad-edge);display:flex;flex-direction:column;justify-content:center;gap:0;">
+
+    <!-- Sun bloom -->
+    <div class="bloom-sun" style="position:absolute;top:-100px;right:-50px;width:600px;height:600px;background:radial-gradient(ellipse 600px 600px at 70% 30%,rgba(241,238,46,.6) 0%,rgba(241,238,46,.3) 40%,rgba(240,218,124,.1) 65%,transparent 85%);pointer-events:none;"></div>
+
+    <div style="position:relative;z-index:1;display:flex;flex-direction:column;gap:var(--gap-strand);">
+
+      <div class="strand-row">
+        <div class="t-strand-num" style="color:var(--ink);">01</div>
+        <div>
+          <div class="t-strand-title" style="margin-bottom:6px;">Contact Profiles</div>
+          <div class="t-body" style="opacity:.7;">Full profile with where you met, first impression, tags, important dates, and interaction timeline.</div>
+        </div>
+      </div>
+
+      <div class="strand-row">
+        <div class="t-strand-num" style="color:var(--ink);">02</div>
+        <div>
+          <div class="t-strand-title" style="margin-bottom:6px;">Interaction Log</div>
+          <div class="t-body" style="opacity:.7;">Log notes after every conversation. AI auto-summarises and adds it to the timeline.</div>
+        </div>
+      </div>
+
+      <div class="strand-row">
+        <div class="t-strand-num" style="color:var(--ink);">03</div>
+        <div>
+          <div class="t-strand-title" style="margin-bottom:6px;">AI Meeting Prep</div>
+          <div class="t-body" style="opacity:.7;">Generate a prep card before any meeting — key talking points, last discussed topics, open threads.</div>
+        </div>
+      </div>
+
+      <div class="strand-row">
+        <div class="t-strand-num" style="color:var(--ink);">04</div>
+        <div>
+          <div class="t-strand-title" style="margin-bottom:6px;">Birthday Calendar</div>
+          <div class="t-body" style="opacity:.7;">Monthly calendar of upcoming birthdays and important dates. Add events by voice or manually.</div>
+        </div>
+      </div>
+
+      <div class="strand-row">
+        <div class="t-strand-num" style="color:var(--ink);">05</div>
+        <div>
+          <div class="t-strand-title" style="margin-bottom:6px;">AI Chat Personas</div>
+          <div class="t-body" style="opacity:.7;">Ask anything about your contacts. Four AI personas — Knowho, 苏苏, 小暖, 明哥 — each with a different tone.</div>
+        </div>
+      </div>
+
+      <div class="strand-row">
+        <div class="t-strand-num" style="color:var(--ink);">06</div>
+        <div>
+          <div class="t-strand-title" style="margin-bottom:6px;">Voice Input</div>
+          <div class="t-body" style="opacity:.7;">Add contacts and log interactions by speaking — no typing required when you're on the go.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="pn">04 / 10</div>
+</section>
+
+
+<!-- ════════════════════════════════
+     SLIDE 05 — AI FEATURES DEEP DIVE
+     ════════════════════════════════ -->
+<section class="slide" id="s5" style="background:var(--paper);padding:var(--pad-edge);">
+
+  <!-- Sun bloom centered-right -->
+  <div class="bloom-sun" style="position:absolute;top:50%;right:-80px;transform:translateY(-50%);width:760px;height:760px;background:radial-gradient(ellipse 760px 760px at 65% 50%,rgba(241,238,46,.85) 0%,rgba(241,238,46,.5) 35%,rgba(240,218,124,.18) 62%,transparent 82%);pointer-events:none;"></div>
+  <div class="bloom-ember" style="position:absolute;bottom:-40px;left:-40px;width:400px;height:360px;background:radial-gradient(ellipse 400px 360px at 30% 70%,rgba(226,107,74,.17) 0%,transparent 70%);pointer-events:none;"></div>
+
+  <div style="position:relative;z-index:1;height:100%;display:grid;grid-template-columns:1fr 1fr;gap:var(--gap-region);">
+
+    <!-- Left -->
+    <div style="display:flex;flex-direction:column;justify-content:center;gap:32px;">
+      <div>
+        <div class="rule" style="margin-bottom:20px;"></div>
+        <div class="t-micro" style="margin-bottom:24px;">§ 03 — AI Capabilities</div>
+        <div class="t-headline">Claude Haiku,<br>as your relationship<br>memory.</div>
+      </div>
+      <div class="t-body-lede" style="max-width:640px;">
+        Every interaction you log becomes structured memory. Claude Haiku reads the pattern across all your contacts and surfaces what matters — before you need to ask.
+      </div>
+    </div>
+
+    <!-- Right: 3 AI feature panels -->
+    <div style="display:flex;flex-direction:column;justify-content:center;gap:0;">
+
+      <div style="padding:28px 0;border-top:1px solid var(--ink);">
+        <div class="t-micro-tight" style="margin-bottom:14px;">Meeting Prep Cards</div>
+        <div class="t-strand-title" style="margin-bottom:8px;">Know before you go</div>
+        <div class="t-body" style="opacity:.7;">Generate a contextual briefing for any contact — last topics, open threads, things to follow up on. One click before a call.</div>
+      </div>
+
+      <div style="padding:28px 0;border-top:1px solid rgba(27,37,102,.18);">
+        <div class="t-micro-tight" style="margin-bottom:14px;">Relationship Analysis</div>
+        <div class="t-strand-title" style="margin-bottom:8px;">The full picture</div>
+        <div class="t-body" style="opacity:.7;">AI reads across the entire interaction history for a contact and synthesises how the relationship has evolved over time.</div>
+      </div>
+
+      <div style="padding:28px 0;border-top:1px solid rgba(27,37,102,.18);">
+        <div class="t-micro-tight" style="margin-bottom:14px;">4 AI Personas</div>
+        <div class="t-strand-title" style="margin-bottom:8px;">Your tone, your voice</div>
+        <div class="t-body" style="opacity:.7;">Knowho (neutral), 苏苏 (warm), 小暖 (caring), 明哥 (direct) — ask the same question, get a different register back.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="pn">05 / 10</div>
+</section>
+
+
+<!-- ════════════════════════════════
+     SLIDE 06 — HOW IT WORKS
+     ════════════════════════════════ -->
+<section class="slide" id="s6" style="background:var(--paper);padding:var(--pad-edge);">
+
+  <!-- Sun bloom bottom-center -->
+  <div class="bloom-sun" style="position:absolute;bottom:-160px;left:50%;transform:translateX(-50%);width:900px;height:700px;background:radial-gradient(ellipse 900px 700px at 50% 80%,rgba(241,238,46,.75) 0%,rgba(241,238,46,.4) 35%,rgba(240,218,124,.15) 60%,transparent 82%);pointer-events:none;"></div>
+
+  <div style="position:relative;z-index:1;height:100%;display:flex;flex-direction:column;justify-content:space-between;">
+
+    <div>
+      <div class="rule" style="margin-bottom:20px;"></div>
+      <div class="t-micro" style="margin-bottom:32px;">§ 04 — How It Works</div>
+      <div class="t-headline" style="max-width:800px;">Three moments.<br>One loop.</div>
+    </div>
+
+    <!-- 3 steps -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0 60px;flex:1;align-content:center;padding:40px 0;">
+
+      <div>
+        <div class="t-numeral-md" style="color:var(--ink);margin-bottom:20px;">01</div>
+        <div class="rule" style="margin-bottom:20px;"></div>
+        <div class="t-headline-sm" style="margin-bottom:16px;">Log</div>
+        <div class="t-body-lede" style="margin-bottom:16px;">After every coffee, call, or DM — add a quick note. Voice input means you can do it in 30 seconds on the go.</div>
+        <div class="t-body" style="opacity:.6;">Claude Haiku auto-summarises and structures it into the contact's timeline.</div>
+      </div>
+
+      <div>
+        <div class="t-numeral-md" style="color:var(--ink);margin-bottom:20px;">02</div>
+        <div class="rule" style="margin-bottom:20px;"></div>
+        <div class="t-headline-sm" style="margin-bottom:16px;">Analyse</div>
+        <div class="t-body-lede" style="margin-bottom:16px;">AI reads across your entire contact history — relationships, patterns, open threads, things to follow up on.</div>
+        <div class="t-body" style="opacity:.6;">Relationship analysis surfaces trends you'd never notice from individual notes alone.</div>
+      </div>
+
+      <div>
+        <div class="t-numeral-md" style="color:var(--ink);margin-bottom:20px;">03</div>
+        <div class="rule" style="margin-bottom:20px;"></div>
+        <div class="t-headline-sm" style="margin-bottom:16px;">Surface</div>
+        <div class="t-body-lede" style="margin-bottom:16px;">Before a meeting, open the prep card. Approaching a birthday, the calendar reminds you. Going cold — a nudge appears.</div>
+        <div class="t-body" style="opacity:.6;">The right context, at the right moment, without having to dig for it.</div>
+      </div>
+
+    </div>
+
+    <div class="rule"></div>
+  </div>
+
+  <div class="pn">06 / 10</div>
+</section>
+
+
+<!-- ════════════════════════════════
+     SLIDE 07 — CHAPTER 02: THE STACK
+     ════════════════════════════════ -->
+<section class="slide" id="s7" style="background:var(--paper);overflow:hidden;">
+
+  <!-- Sun bloom left side -->
+  <div class="bloom-sun" style="position:absolute;top:-100px;left:-100px;width:720px;height:720px;background:radial-gradient(ellipse 720px 720px at 30% 40%,rgba(241,238,46,.88) 0%,rgba(241,238,46,.52) 35%,rgba(240,218,124,.18) 60%,transparent 80%);pointer-events:none;"></div>
+
+  <!-- Yellow panel left column -->
+  <div class="yellow-panel" style="position:absolute;left:0;top:0;width:480px;height:100%;display:flex;flex-direction:column;justify-content:center;padding:var(--pad-edge);">
+    <div class="t-micro" style="margin-bottom:32px;">Chapter 02</div>
+    <div class="t-headline" style="color:var(--ink);">The Stack</div>
+    <div style="margin-top:32px;width:40px;height:1px;background:var(--ink);"></div>
+  </div>
+
+  <!-- Right: jumbo numeral -->
+  <div style="position:absolute;left:480px;top:0;right:0;height:100%;display:flex;align-items:flex-end;padding:var(--pad-edge);overflow:hidden;">
+    <div class="t-jumbo" style="color:var(--ink);opacity:.15;line-height:.84;position:absolute;right:-40px;bottom:-60px;">2</div>
+    <div style="position:relative;z-index:1;">
+      <div class="t-body-lede" style="max-width:600px;opacity:.8;">Production-grade tooling. Every dependency chosen for reliability, not novelty.</div>
+    </div>
+  </div>
+
+  <div class="pn">07 / 10</div>
+</section>
+
+
+<!-- ════════════════════════════════
+     SLIDE 08 — TECH STACK (ledger)
+     ════════════════════════════════ -->
+<section class="slide" id="s8" style="background:var(--paper);padding:var(--pad-edge);">
+
+  <!-- Sun bloom top right -->
+  <div class="bloom-sun" style="position:absolute;top:-80px;right:-80px;width:640px;height:640px;background:radial-gradient(ellipse 640px 640px at 65% 30%,rgba(241,238,46,.75) 0%,rgba(241,238,46,.4) 38%,rgba(240,218,124,.15) 62%,transparent 82%);pointer-events:none;"></div>
+
+  <div style="position:relative;z-index:1;height:100%;display:flex;flex-direction:column;justify-content:space-between;">
+
+    <div>
+      <div class="rule" style="margin-bottom:20px;"></div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;">
+        <div class="t-micro">§ 05 — Tech Stack</div>
+        <div class="t-mono-date" style="opacity:.6;">Next.js · TypeScript · Vercel</div>
+      </div>
+    </div>
+
+    <!-- Ledger table -->
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:0;padding:24px 0;">
+
+      <div class="ledger-row">
+        <div class="t-mono-date" style="opacity:.6;">Framework</div>
+        <div class="t-ledger-title">Next.js — App Router</div>
+        <div class="t-body" style="opacity:.7;">Server Components + Route Handlers</div>
+        <div class="t-mono-data" style="text-align:right;opacity:.5;">v15</div>
+      </div>
+
+      <div class="ledger-row">
+        <div class="t-mono-date" style="opacity:.6;">Language</div>
+        <div class="t-ledger-title">TypeScript</div>
+        <div class="t-body" style="opacity:.7;">Strict mode throughout</div>
+        <div class="t-mono-data" style="text-align:right;opacity:.5;">v5</div>
+      </div>
+
+      <div class="ledger-row" style="background:rgba(241,238,46,.25);">
+        <div class="t-mono-date" style="opacity:.6;">AI</div>
+        <div class="t-ledger-title">Claude Haiku</div>
+        <div class="t-body" style="opacity:.7;">Meeting prep + chat + relationship analysis</div>
+        <div class="t-mono-data" style="text-align:right;opacity:.5;">Anthropic</div>
+      </div>
+
+      <div class="ledger-row">
+        <div class="t-mono-date" style="opacity:.6;">Database</div>
+        <div class="t-ledger-title">Vercel Postgres</div>
+        <div class="t-body" style="opacity:.7;">Prisma ORM · schema-first</div>
+        <div class="t-mono-data" style="text-align:right;opacity:.5;">Prisma v5</div>
+      </div>
+
+      <div class="ledger-row">
+        <div class="t-mono-date" style="opacity:.6;">Auth</div>
+        <div class="t-ledger-title">NextAuth.js v5</div>
+        <div class="t-body" style="opacity:.7;">Google OAuth — session-based</div>
+        <div class="t-mono-data" style="text-align:right;opacity:.5;">v5 beta</div>
+      </div>
+
+      <div class="ledger-row">
+        <div class="t-mono-date" style="opacity:.6;">Styling</div>
+        <div class="t-ledger-title">Tailwind + shadcn/ui</div>
+        <div class="t-body" style="opacity:.7;">Utility-first · unstyled headless base</div>
+        <div class="t-mono-data" style="text-align:right;opacity:.5;">v3</div>
+      </div>
+
+      <div class="ledger-row">
+        <div class="t-mono-date" style="opacity:.6;">Deploy</div>
+        <div class="t-ledger-title">Vercel</div>
+        <div class="t-body" style="opacity:.7;">Edge-compatible · instant rollbacks</div>
+        <div class="t-mono-data" style="text-align:right;opacity:.5;">Production</div>
+      </div>
+
+    </div>
+
+    <div class="rule"></div>
+  </div>
+
+  <div class="pn">08 / 10</div>
+</section>
+
+
+<!-- ════════════════════════════════
+     SLIDE 09 — ROADMAP
+     ════════════════════════════════ -->
+<section class="slide" id="s9" style="background:var(--paper);padding:var(--pad-edge);">
+
+  <!-- Sun bloom left -->
+  <div class="bloom-sun" style="position:absolute;top:50%;left:-120px;transform:translateY(-50%);width:680px;height:680px;background:radial-gradient(ellipse 680px 680px at 25% 50%,rgba(241,238,46,.8) 0%,rgba(241,238,46,.45) 38%,rgba(240,218,124,.16) 62%,transparent 82%);pointer-events:none;"></div>
+  <div class="bloom-ember" style="position:absolute;top:-60px;right:-40px;width:400px;height:380px;background:radial-gradient(ellipse 400px 380px at 70% 25%,rgba(226,107,74,.16) 0%,transparent 70%);pointer-events:none;"></div>
+
+  <div style="position:relative;z-index:1;height:100%;display:grid;grid-template-columns:1fr 1fr;gap:80px;">
+
+    <!-- Left: headline + completed -->
+    <div style="display:flex;flex-direction:column;justify-content:space-between;">
+      <div>
+        <div class="rule" style="margin-bottom:20px;"></div>
+        <div class="t-micro" style="margin-bottom:28px;">§ 06 — Status</div>
+        <div class="t-headline" style="margin-bottom:20px;">V1 shipped.<br>What's next.</div>
+        <div class="t-body-lede" style="opacity:.8;max-width:560px;">Core features are live. The roadmap focuses on passive intelligence — reminders that reach you before you have to think to ask.</div>
+      </div>
+
+      <!-- Completion stat -->
+      <div>
+        <div class="rule" style="margin-bottom:20px;"></div>
+        <div style="display:flex;align-items:baseline;gap:20px;">
+          <div class="t-numeral-md">12</div>
+          <div>
+            <div class="t-strand-title">features shipped</div>
+            <div class="t-body" style="opacity:.6;">profiles · timeline · prep · calendar · voice · AI chat · personas · analysis</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: bar chart roadmap -->
+    <div style="display:flex;flex-direction:column;justify-content:center;gap:0;">
+
+      <div style="padding:16px 0;border-top:1px solid var(--ink);display:flex;align-items:center;justify-content:space-between;gap:20px;">
+        <div class="t-strand-title" style="width:280px;">Contact Profiles</div>
+        <div style="flex:1;"><div class="bar-lit" style="width:100%;"></div></div>
+        <div class="t-mono-data" style="width:40px;text-align:right;">✓</div>
+      </div>
+
+      <div style="padding:16px 0;border-top:1px solid rgba(27,37,102,.18);display:flex;align-items:center;justify-content:space-between;gap:20px;">
+        <div class="t-strand-title" style="width:280px;">Interaction Log + AI</div>
+        <div style="flex:1;"><div class="bar-lit" style="width:100%;"></div></div>
+        <div class="t-mono-data" style="width:40px;text-align:right;">✓</div>
+      </div>
+
+      <div style="padding:16px 0;border-top:1px solid rgba(27,37,102,.18);display:flex;align-items:center;justify-content:space-between;gap:20px;">
+        <div class="t-strand-title" style="width:280px;">Birthday Calendar</div>
+        <div style="flex:1;"><div class="bar-lit" style="width:100%;"></div></div>
+        <div class="t-mono-data" style="width:40px;text-align:right;">✓</div>
+      </div>
+
+      <div style="padding:16px 0;border-top:1px solid rgba(27,37,102,.18);display:flex;align-items:center;justify-content:space-between;gap:20px;">
+        <div class="t-strand-title" style="width:280px;">Email Birthday Digest</div>
+        <div style="flex:1;"><div class="bar-ink" style="width:35%;"></div></div>
+        <div class="t-mono-data" style="width:40px;text-align:right;opacity:.5;">→</div>
+      </div>
+
+      <div style="padding:16px 0;border-top:1px solid rgba(27,37,102,.18);display:flex;align-items:center;justify-content:space-between;gap:20px;">
+        <div class="t-strand-title" style="width:280px;">Going Cold Reminders</div>
+        <div style="flex:1;"><div class="bar-ink" style="width:20%;"></div></div>
+        <div class="t-mono-data" style="width:40px;text-align:right;opacity:.5;">→</div>
+      </div>
+
+      <div style="padding:16px 0;border-top:1px solid rgba(27,37,102,.18);display:flex;align-items:center;justify-content:space-between;gap:20px;">
+        <div class="t-strand-title" style="width:280px;">Friend Share Links</div>
+        <div style="flex:1;"><div class="bar-ink" style="width:8%;"></div></div>
+        <div class="t-mono-data" style="width:40px;text-align:right;opacity:.5;">→</div>
+      </div>
+
+      <div style="padding:16px 0;border-top:1px solid rgba(27,37,102,.18);display:flex;align-items:center;justify-content:space-between;gap:20px;">
+        <div class="t-strand-title" style="width:280px;">Mobile App</div>
+        <div style="flex:1;"><div class="bar-ink" style="width:5%;"></div></div>
+        <div class="t-mono-data" style="width:40px;text-align:right;opacity:.5;">→</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="pn">09 / 10</div>
+</section>
+
+
+<!-- ════════════════════════════════
+     SLIDE 10 — COLOPHON
+     ════════════════════════════════ -->
+<section class="slide" id="s10" style="background:var(--paper);padding:var(--pad-edge);">
+
+  <!-- Block tiles -->
+  <div style="position:absolute;inset:0;pointer-events:none;overflow:hidden;">
+    <div style="position:absolute;width:240px;height:180px;background:rgba(241,238,46,.5);bottom:120px;left:0;"></div>
+    <div style="position:absolute;width:160px;height:240px;background:rgba(241,238,46,.35);bottom:0;left:240px;"></div>
+    <div style="position:absolute;width:320px;height:200px;background:rgba(241,238,46,.25);top:0;right:200px;"></div>
+    <div style="position:absolute;width:200px;height:300px;background:rgba(241,238,46,.4);top:200px;right:0;"></div>
+  </div>
+
+  <!-- Sun bloom centered -->
+  <div class="bloom-sun" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:900px;height:800px;background:radial-gradient(ellipse 900px 800px at 50% 50%,rgba(241,238,46,.7) 0%,rgba(241,238,46,.38) 38%,rgba(240,218,124,.15) 62%,transparent 82%);pointer-events:none;"></div>
+
+  <div style="position:relative;z-index:1;height:100%;display:flex;flex-direction:column;justify-content:space-between;">
+
+    <div>
+      <div class="rule" style="margin-bottom:20px;"></div>
+      <div class="t-micro">Knowho — Personal AI Contact Manager</div>
+    </div>
+
+    <!-- Main closing -->
+    <div>
+      <div class="t-display" style="margin-bottom:28px;">Knowho</div>
+      <div class="t-display-it" style="max-width:1000px;margin-bottom:36px;">
+        the quiet tool for showing up as the person you want to be.
+      </div>
+      <div class="t-body-lede" style="max-width:700px;opacity:.8;">
+        Built by Sarah Wang — a full-stack project to solve a personal problem that turned out to be universal.
+      </div>
+    </div>
+
+    <!-- Footer band -->
+    <div>
+      <div class="rule" style="margin-bottom:24px;"></div>
+      <div class="footer-band">
+        <div class="footer-cell">
+          <div class="t-micro-tight" style="margin-bottom:8px;">Live</div>
+          <div class="t-body-sm">GitHub — sarahwangy/knowho</div>
+        </div>
+        <div class="footer-cell">
+          <div class="t-micro-tight" style="margin-bottom:8px;">AI</div>
+          <div class="t-body-sm">Claude Haiku — Anthropic</div>
+        </div>
+        <div class="footer-cell">
+          <div class="t-micro-tight" style="margin-bottom:8px;">Stack</div>
+          <div class="t-body-sm">Next.js · Prisma · NextAuth v5</div>
+        </div>
+        <div class="footer-cell">
+          <div class="t-micro-tight" style="margin-bottom:8px;">Year</div>
+          <div class="t-mono-date">2026</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pn">10 / 10</div>
+</section>
+
+
+</main>
+</div>
+
+<!-- Nav dots -->
+<div class="nav-dots" id="navDots"></div>
+
+<script>
+(function(){
+  const stage  = document.getElementById('stage');
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const dots   = document.getElementById('navDots');
+  let cur = 0;
+
+  function scale(){
+    const f = Math.min(window.innerWidth/1920, window.innerHeight/1080);
+    const x = (window.innerWidth  - 1920*f)/2;
+    const y = (window.innerHeight - 1080*f)/2;
+    stage.style.transform = `translate(${x}px,${y}px) scale(${f})`;
+  }
+  scale(); window.addEventListener('resize', scale);
+
+  slides.forEach((_,i)=>{
+    const d = document.createElement('div');
+    d.className='nav-dot';
+    d.addEventListener('click',()=>go(i));
+    dots.appendChild(d);
+  });
+  const dotEls = dots.querySelectorAll('.nav-dot');
+
+  function go(i){
+    i = Math.max(0,Math.min(i,slides.length-1));
+    slides.forEach((s,j)=>s.classList.toggle('active',j===i));
+    dotEls.forEach((d,j)=>d.classList.toggle('on',j===i));
+    cur = i;
+  }
+  go(0);
+
+  document.addEventListener('keydown',e=>{
+    if(['ArrowRight','ArrowDown',' ','PageDown','Enter'].includes(e.key)){e.preventDefault();go(cur+1);}
+    if(['ArrowLeft','ArrowUp','PageUp'].includes(e.key)){e.preventDefault();go(cur-1);}
+    if(e.key==='Home'){e.preventDefault();go(0);}
+    if(e.key==='End'){e.preventDefault();go(slides.length-1);}
+  });
+
+  let tx=0;
+  window.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;},{passive:true});
+  window.addEventListener('touchend',e=>{
+    const dx=e.changedTouches[0].clientX-tx;
+    if(Math.abs(dx)>40){dx<0?go(cur+1):go(cur-1);}
+  },{passive:true});
+
+  let wl=false;
+  window.addEventListener('wheel',e=>{
+    if(wl)return;wl=true;setTimeout(()=>wl=false,700);
+    e.deltaY>0?go(cur+1):go(cur-1);
+  },{passive:true});
+})();
+</script>
+</body>
+</html>
